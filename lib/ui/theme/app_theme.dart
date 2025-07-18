@@ -5,52 +5,52 @@ import '../../core/constants/app_dimensions.dart';
 
 class AppTheme {
   static ThemeData get lightTheme => ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primaryGreen,
-          brightness: Brightness.light,
-          primary: AppColors.primaryGreen,
-          secondary: AppColors.accentGold,
-          surface: AppColors.surfaceLight,
-          background: AppColors.backgroundLight,
-          error: AppColors.statusDanger,
-        ),
-        textTheme: _buildTextTheme(Brightness.light),
-        appBarTheme: _buildAppBarTheme(Brightness.light),
-        elevatedButtonTheme: _buildElevatedButtonTheme(Brightness.light),
-        filledButtonTheme: _buildFilledButtonTheme(Brightness.light),
-        outlinedButtonTheme: _buildOutlinedButtonTheme(Brightness.light),
-        cardTheme: _buildCardTheme(Brightness.light),
-        inputDecorationTheme: _buildInputDecorationTheme(Brightness.light),
-        bottomNavigationBarTheme: _buildBottomNavTheme(Brightness.light),
-        floatingActionButtonTheme: _buildFABTheme(Brightness.light),
-        scaffoldBackgroundColor: AppColors.backgroundLight,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      );
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.primaryGreen,
+      brightness: Brightness.light,
+      primary: AppColors.primaryGreen,
+      secondary: AppColors.accentGold,
+      surface: AppColors.surfaceLight,
+      background: AppColors.backgroundLight,
+      error: AppColors.statusDanger,
+    ),
+    textTheme: _buildTextTheme(Brightness.light),
+    appBarTheme: _buildAppBarTheme(Brightness.light),
+    elevatedButtonTheme: _buildElevatedButtonTheme(Brightness.light),
+    filledButtonTheme: _buildFilledButtonTheme(Brightness.light),
+    outlinedButtonTheme: _buildOutlinedButtonTheme(Brightness.light),
+    cardTheme: _buildCardTheme(Brightness.light),
+    inputDecorationTheme: _buildInputDecorationTheme(Brightness.light),
+    bottomNavigationBarTheme: _buildBottomNavTheme(Brightness.light),
+    floatingActionButtonTheme: _buildFABTheme(Brightness.light),
+    scaffoldBackgroundColor: AppColors.backgroundLight,
+    visualDensity: VisualDensity.adaptivePlatformDensity,
+  );
 
   static ThemeData get darkTheme => ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primaryGreen,
-          brightness: Brightness.dark,
-          primary: AppColors.primaryGreenLight,
-          secondary: AppColors.accentGoldLight,
-          surface: AppColors.surfaceDark,
-          background: AppColors.backgroundDark,
-          error: AppColors.statusDanger,
-        ),
-        textTheme: _buildTextTheme(Brightness.dark),
-        appBarTheme: _buildAppBarTheme(Brightness.dark),
-        elevatedButtonTheme: _buildElevatedButtonTheme(Brightness.dark),
-        filledButtonTheme: _buildFilledButtonTheme(Brightness.dark),
-        outlinedButtonTheme: _buildOutlinedButtonTheme(Brightness.dark),
-        cardTheme: _buildCardTheme(Brightness.dark),
-        inputDecorationTheme: _buildInputDecorationTheme(Brightness.dark),
-        bottomNavigationBarTheme: _buildBottomNavTheme(Brightness.dark),
-        floatingActionButtonTheme: _buildFABTheme(Brightness.dark),
-        scaffoldBackgroundColor: AppColors.backgroundDark,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      );
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.primaryGreen,
+      brightness: Brightness.dark,
+      primary: AppColors.primaryGreenLight,
+      secondary: AppColors.accentGoldLight,
+      surface: AppColors.surfaceDark,
+      background: AppColors.backgroundDark,
+      error: AppColors.statusDanger,
+    ),
+    textTheme: _buildTextTheme(Brightness.dark),
+    appBarTheme: _buildAppBarTheme(Brightness.dark),
+    elevatedButtonTheme: _buildElevatedButtonTheme(Brightness.dark),
+    filledButtonTheme: _buildFilledButtonTheme(Brightness.dark),
+    outlinedButtonTheme: _buildOutlinedButtonTheme(Brightness.dark),
+    cardTheme: _buildCardTheme(Brightness.dark),
+    inputDecorationTheme: _buildInputDecorationTheme(Brightness.dark),
+    bottomNavigationBarTheme: _buildBottomNavTheme(Brightness.dark),
+    floatingActionButtonTheme: _buildFABTheme(Brightness.dark),
+    scaffoldBackgroundColor: AppColors.backgroundDark,
+    visualDensity: VisualDensity.adaptivePlatformDensity,
+  );
 
   static TextTheme _buildTextTheme(Brightness brightness) {
     final baseTheme = GoogleFonts.poppinsTextTheme();
@@ -100,14 +100,8 @@ class AppTheme {
         color: textColor,
         fontWeight: FontWeight.w500,
       ),
-      bodyLarge: baseTheme.bodyLarge?.copyWith(
-        color: textColor,
-        height: 1.5,
-      ),
-      bodyMedium: baseTheme.bodyMedium?.copyWith(
-        color: textColor,
-        height: 1.5,
-      ),
+      bodyLarge: baseTheme.bodyLarge?.copyWith(color: textColor, height: 1.5),
+      bodyMedium: baseTheme.bodyMedium?.copyWith(color: textColor, height: 1.5),
       bodySmall: baseTheme.bodySmall?.copyWith(
         color: secondaryColor,
         height: 1.4,
@@ -152,10 +146,15 @@ class AppTheme {
     );
   }
 
-  static ElevatedButtonThemeData _buildElevatedButtonTheme(Brightness brightness) {
+  static ElevatedButtonThemeData _buildElevatedButtonTheme(
+    Brightness brightness,
+  ) {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        minimumSize: const Size(AppDimensions.buttonMinWidth, AppDimensions.buttonHeight),
+        minimumSize: const Size(
+          AppDimensions.buttonMinWidth,
+          AppDimensions.buttonHeight,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
         ),
@@ -172,7 +171,10 @@ class AppTheme {
   static FilledButtonThemeData _buildFilledButtonTheme(Brightness brightness) {
     return FilledButtonThemeData(
       style: FilledButton.styleFrom(
-        minimumSize: const Size(AppDimensions.buttonMinWidth, AppDimensions.buttonHeight),
+        minimumSize: const Size(
+          AppDimensions.buttonMinWidth,
+          AppDimensions.buttonHeight,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
         ),
@@ -185,10 +187,15 @@ class AppTheme {
     );
   }
 
-  static OutlinedButtonThemeData _buildOutlinedButtonTheme(Brightness brightness) {
+  static OutlinedButtonThemeData _buildOutlinedButtonTheme(
+    Brightness brightness,
+  ) {
     return OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        minimumSize: const Size(AppDimensions.buttonMinWidth, AppDimensions.buttonHeight),
+        minimumSize: const Size(
+          AppDimensions.buttonMinWidth,
+          AppDimensions.buttonHeight,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
         ),
@@ -207,8 +214,8 @@ class AppTheme {
     );
   }
 
-  static CardTheme _buildCardTheme(Brightness brightness) {
-    return CardTheme(
+  static CardThemeData _buildCardTheme(Brightness brightness) {
+    return CardThemeData(
       elevation: AppDimensions.cardElevation,
       color: brightness == Brightness.light
           ? AppColors.cardLight
@@ -223,7 +230,9 @@ class AppTheme {
     );
   }
 
-  static InputDecorationTheme _buildInputDecorationTheme(Brightness brightness) {
+  static InputDecorationTheme _buildInputDecorationTheme(
+    Brightness brightness,
+  ) {
     return InputDecorationTheme(
       filled: true,
       fillColor: brightness == Brightness.light
@@ -261,7 +270,9 @@ class AppTheme {
     );
   }
 
-  static BottomNavigationBarThemeData _buildBottomNavTheme(Brightness brightness) {
+  static BottomNavigationBarThemeData _buildBottomNavTheme(
+    Brightness brightness,
+  ) {
     return BottomNavigationBarThemeData(
       backgroundColor: brightness == Brightness.light
           ? AppColors.cardLight

@@ -149,12 +149,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Bonjour ! 🌱',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryGreen,
-                  ),
-                )
+                      'Bonjour ! 🌱',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryGreen,
+                          ),
+                    )
                     .animate(controller: _contentController)
                     .fadeIn(duration: 600.ms, curve: Curves.easeOut)
                     .slideX(
@@ -167,11 +168,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 const SizedBox(height: AppDimensions.spaceSM),
 
                 Text(
-                  'Vos cultures sont protégées',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                )
+                      'Vos cultures sont protégées',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    )
                     .animate(controller: _contentController)
                     .fadeIn(
                       duration: 600.ms,
@@ -190,59 +191,56 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
             // Badge de statut
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppDimensions.paddingMD,
-                vertical: AppDimensions.paddingSM,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.statusHealthy.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
-                border: Border.all(
-                  color: AppColors.statusHealthy.withOpacity(0.3),
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: AppColors.statusHealthy,
-                      shape: BoxShape.circle,
-                    ),
-                  )
-                      .animate(onPlay: (controller) => controller.repeat())
-                      .scale(
-                        duration: 1000.ms,
-                        begin: const Offset(1.0, 1.0),
-                        end: const Offset(1.3, 1.3),
-                      )
-                      .then()
-                      .scale(
-                        duration: 1000.ms,
-                        begin: const Offset(1.3, 1.3),
-                        end: const Offset(1.0, 1.0),
-                      ),
-
-                  const SizedBox(width: AppDimensions.spaceSM),
-
-                  Text(
-                    'En ligne',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: AppColors.statusHealthy,
-                      fontWeight: FontWeight.w500,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppDimensions.paddingMD,
+                    vertical: AppDimensions.paddingSM,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.statusHealthy.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
+                    border: Border.all(
+                      color: AppColors.statusHealthy.withOpacity(0.3),
                     ),
                   ),
-                ],
-              ),
-            )
-                .animate(controller: _contentController)
-                .fadeIn(
-                  duration: 600.ms,
-                  delay: 400.ms,
-                  curve: Curves.easeOut,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: AppColors.statusHealthy,
+                              shape: BoxShape.circle,
+                            ),
+                          )
+                          .animate(onPlay: (controller) => controller.repeat())
+                          .scale(
+                            duration: 1000.ms,
+                            begin: const Offset(1.0, 1.0),
+                            end: const Offset(1.3, 1.3),
+                          )
+                          .then()
+                          .scale(
+                            duration: 1000.ms,
+                            begin: const Offset(1.3, 1.3),
+                            end: const Offset(1.0, 1.0),
+                          ),
+
+                      const SizedBox(width: AppDimensions.spaceSM),
+
+                      Text(
+                        'En ligne',
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
+                              color: AppColors.statusHealthy,
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+                    ],
+                  ),
                 )
+                .animate(controller: _contentController)
+                .fadeIn(duration: 600.ms, delay: 400.ms, curve: Curves.easeOut)
                 .scale(
                   begin: const Offset(0.8, 0.8),
                   end: const Offset(1.0, 1.0),
@@ -262,19 +260,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         children: [
           // Titre du scanner
           Text(
-            'Analyser une plante',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-            textAlign: TextAlign.center,
-          )
-              .animate(controller: _contentController)
-              .fadeIn(
-                duration: 600.ms,
-                delay: 600.ms,
-                curve: Curves.easeOut,
+                'Analyser une plante',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+                textAlign: TextAlign.center,
               )
+              .animate(controller: _contentController)
+              .fadeIn(duration: 600.ms, delay: 600.ms, curve: Curves.easeOut)
               .slideY(
                 begin: 0.3,
                 end: 0.0,
@@ -286,79 +280,68 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           const SizedBox(height: AppDimensions.spaceMD),
 
           Text(
-            'Prenez une photo pour un diagnostic IA instantané',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          )
+                'Prenez une photo pour un diagnostic IA instantané',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              )
               .animate(controller: _contentController)
-              .fadeIn(
-                duration: 600.ms,
-                delay: 700.ms,
-                curve: Curves.easeOut,
-              ),
+              .fadeIn(duration: 600.ms, delay: 700.ms, curve: Curves.easeOut),
 
           const SizedBox(height: AppDimensions.spaceXL),
 
           // Gros bouton scanner avec Hero animation
           Hero(
-            tag: 'scanner_button',
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [
-                    AppColors.scannerFrame,
-                    Color(0xFF00C853),
-                  ],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.scannerFrame.withOpacity(0.3),
-                    blurRadius: 30,
-                    spreadRadius: 5,
+                tag: 'scanner_button',
+                child: Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                      colors: [AppColors.scannerFrame, Color(0xFF00C853)],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.scannerFrame.withOpacity(0.3),
+                        blurRadius: 30,
+                        spreadRadius: 5,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => context.push(AppRoutes.scan),
-                  borderRadius: BorderRadius.circular(100),
-                  child: const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.camera_alt_outlined,
-                          size: 48,
-                          color: AppColors.textOnDark,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => context.push(AppRoutes.scan),
+                      borderRadius: BorderRadius.circular(100),
+                      child: const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.camera_alt_outlined,
+                              size: 48,
+                              color: AppColors.textOnDark,
+                            ),
+                            SizedBox(height: AppDimensions.spaceSM),
+                            Text(
+                              'Scanner',
+                              style: TextStyle(
+                                color: AppColors.textOnDark,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: AppDimensions.spaceSM),
-                        Text(
-                          'Scanner',
-                          style: TextStyle(
-                            color: AppColors.textOnDark,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          )
-              .animate(controller: _contentController)
-              .fadeIn(
-                duration: 800.ms,
-                delay: 800.ms,
-                curve: Curves.easeOut,
               )
+              .animate(controller: _contentController)
+              .fadeIn(duration: 800.ms, delay: 800.ms, curve: Curves.easeOut)
               .scale(
                 begin: const Offset(0.5, 0.5),
                 end: const Offset(1.0, 1.0),
@@ -433,81 +416,79 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     required int delay,
   }) {
     return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardLight,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadowLight,
-            offset: const Offset(0, 2),
-            blurRadius: 8,
+          decoration: BoxDecoration(
+            color: AppColors.cardLight,
+            borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadowLight,
+                offset: const Offset(0, 2),
+                blurRadius: 8,
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
-          child: Padding(
-            padding: const EdgeInsets.all(AppDimensions.paddingLG),
-            child: Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusMD),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: color,
-                    size: AppDimensions.iconMD,
-                  ),
-                ),
-
-                const SizedBox(width: AppDimensions.spaceMD),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textPrimary,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
+              child: Padding(
+                padding: const EdgeInsets.all(AppDimensions.paddingLG),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(
+                          AppDimensions.radiusMD,
                         ),
                       ),
-                      const SizedBox(height: AppDimensions.spaceXS),
-                      Text(
-                        subtitle,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                      child: Icon(
+                        icon,
+                        color: color,
+                        size: AppDimensions.iconMD,
                       ),
-                    ],
-                  ),
-                ),
+                    ),
 
-                Icon(
-                  Icons.arrow_forward_ios,
-                  color: AppColors.textSecondary,
-                  size: AppDimensions.iconSM,
+                    const SizedBox(width: AppDimensions.spaceMD),
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textPrimary,
+                                ),
+                          ),
+                          const SizedBox(height: AppDimensions.spaceXS),
+                          Text(
+                            subtitle,
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(color: AppColors.textSecondary),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: AppColors.textSecondary,
+                      size: AppDimensions.iconSM,
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    )
-        .animate(controller: _contentController)
-        .fadeIn(
-          duration: 600.ms,
-          delay: delay.ms,
-          curve: Curves.easeOut,
         )
+        .animate(controller: _contentController)
+        .fadeIn(duration: 600.ms, delay: delay.ms, curve: Curves.easeOut)
         .slideX(
           begin: 0.3,
           end: 0.0,
@@ -519,39 +500,33 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildQuickStats() {
     return Container(
-      padding: const EdgeInsets.all(AppDimensions.paddingLG),
-      decoration: BoxDecoration(
-        color: AppColors.primaryGreen.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
-        border: Border.all(
-          color: AppColors.primaryGreen.withOpacity(0.1),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildStatItem('15', 'Analyses', Icons.analytics_outlined),
-          Container(
-            width: 1,
-            height: 40,
-            color: AppColors.primaryGreen.withOpacity(0.2),
+          padding: const EdgeInsets.all(AppDimensions.paddingLG),
+          decoration: BoxDecoration(
+            color: AppColors.primaryGreen.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
+            border: Border.all(color: AppColors.primaryGreen.withOpacity(0.1)),
           ),
-          _buildStatItem('98%', 'Précision', Icons.accuracy_outlined),
-          Container(
-            width: 1,
-            height: 40,
-            color: AppColors.primaryGreen.withOpacity(0.2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildStatItem('15', 'Analyses', Icons.analytics_outlined),
+              Container(
+                width: 1,
+                height: 40,
+                color: AppColors.primaryGreen.withOpacity(0.2),
+              ),
+              _buildStatItem('98%', 'Précision', Icons.verified_outlined),
+              Container(
+                width: 1,
+                height: 40,
+                color: AppColors.primaryGreen.withOpacity(0.2),
+              ),
+              _buildStatItem('24/7', 'Protection', Icons.shield_outlined),
+            ],
           ),
-          _buildStatItem('24/7', 'Protection', Icons.shield_outlined),
-        ],
-      ),
-    )
-        .animate(controller: _contentController)
-        .fadeIn(
-          duration: 600.ms,
-          delay: 1400.ms,
-          curve: Curves.easeOut,
         )
+        .animate(controller: _contentController)
+        .fadeIn(duration: 600.ms, delay: 1400.ms, curve: Curves.easeOut)
         .slideY(
           begin: 0.3,
           end: 0.0,
@@ -565,11 +540,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          color: AppColors.primaryGreen,
-          size: AppDimensions.iconMD,
-        ),
+        Icon(icon, color: AppColors.primaryGreen, size: AppDimensions.iconMD),
         const SizedBox(height: AppDimensions.spaceXS),
         Text(
           value,
@@ -580,9 +551,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: AppColors.textSecondary,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
         ),
       ],
     );
