@@ -11,12 +11,14 @@ import '../../core/providers/producer_profile_service.dart';
 import '../widgets/profile_photo_widget.dart';
 import '../widgets/production_card_widget.dart';
 import '../widgets/production_form_dialog.dart';
+import '../widgets/client_finder_animation.dart';
 
 class ProducerProfilePage extends ConsumerStatefulWidget {
   const ProducerProfilePage({super.key});
 
   @override
-  ConsumerState<ProducerProfilePage> createState() => _ProducerProfilePageState();
+  ConsumerState<ProducerProfilePage> createState() =>
+      _ProducerProfilePageState();
 }
 
 class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
@@ -145,16 +147,21 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
 
           // Productions
           SliverToBoxAdapter(child: _buildProductionsHeader(profile)),
-          
+
           if (profile.productions.isNotEmpty)
             SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) => _buildProductionItem(profile.productions[index], index),
+                (context, index) =>
+                    _buildProductionItem(profile.productions[index], index),
                 childCount: profile.productions.length,
               ),
             )
           else
             SliverToBoxAdapter(child: _buildEmptyProductionsState()),
+
+          // Section recherche de clients - n'apparaît que si le profil est complété
+          if (_isProfileCompleted(profile))
+            SliverToBoxAdapter(child: _buildClientFinderSection()),
 
           // Espacement final
           const SliverToBoxAdapter(child: SizedBox(height: 100)),
@@ -180,13 +187,10 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
             photoPath: profile.photoPath,
             isEditing: _isEditing,
             onPhotoTap: _isEditing ? _updateProfilePhoto : null,
-          ).animate().scale(
-            duration: 600.ms,
-            curve: Curves.elasticOut,
-          ),
-          
+          ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
+
           const SizedBox(height: 16),
-          
+
           // Nom
           if (_isEditing)
             TextField(
@@ -216,9 +220,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
               duration: 500.ms,
               curve: Curves.easeOut,
             ),
-          
+
           const SizedBox(height: 8),
-          
+
           // Badge producteur
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -291,26 +295,23 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
               controller: _descriptionController,
               maxLines: 4,
               decoration: const InputDecoration(
-                hintText: 'Parlez-nous de vous, de votre exploitation, de vos méthodes...',
+                hintText:
+                    'Parlez-nous de vous, de votre exploitation, de vos méthodes...',
                 border: OutlineInputBorder(),
               ),
             )
           else
             Text(
-              profile.description?.isEmpty == true 
-                  ? 'Aucune description disponible' 
+              profile.description?.isEmpty == true
+                  ? 'Aucune description disponible'
                   : profile.description!,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
         ],
       ),
-    ).animate().slideY(
-      begin: 0.2,
-      duration: 700.ms,
-      curve: Curves.easeOut,
-    );
+    ).animate().slideY(begin: 0.2, duration: 700.ms, curve: Curves.easeOut);
   }
 
   Widget _buildDetailsSection(ProducerProfile profile) {
@@ -339,7 +340,7 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Email
           _buildDetailField(
             icon: Icons.email_outlined,
@@ -348,9 +349,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
             value: profile.email,
             keyboardType: TextInputType.emailAddress,
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Téléphone
           _buildDetailField(
             icon: Icons.phone_outlined,
@@ -359,9 +360,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
             value: profile.phone,
             keyboardType: TextInputType.phone,
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Localisation
           _buildDetailField(
             icon: Icons.location_on_outlined,
@@ -369,9 +370,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
             controller: _locationController,
             value: profile.location ?? '',
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Méthodes agricoles
           _buildDetailField(
             icon: Icons.agriculture_outlined,
@@ -382,11 +383,7 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
           ),
         ],
       ),
-    ).animate().slideY(
-      begin: 0.2,
-      duration: 800.ms,
-      curve: Curves.easeOut,
-    );
+    ).animate().slideY(begin: 0.2, duration: 800.ms, curve: Curves.easeOut);
   }
 
   Widget _buildDetailField({
@@ -400,11 +397,7 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          color: AppColors.primaryGreen,
-          size: 20,
-        ),
+        Icon(icon, color: AppColors.primaryGreen, size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -433,7 +426,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
                 Text(
                   value.isEmpty ? 'Non renseigné' : value,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: value.isEmpty ? AppColors.textSecondary : AppColors.textPrimary,
+                    color: value.isEmpty
+                        ? AppColors.textSecondary
+                        : AppColors.textPrimary,
                   ),
                 ),
             ],
@@ -448,11 +443,7 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          const Icon(
-            Icons.grass,
-            color: AppColors.primaryGreen,
-            size: 28,
-          ),
+          const Icon(Icons.grass, color: AppColors.primaryGreen, size: 28),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -480,24 +471,21 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
             ),
         ],
       ),
-    ).animate().slideX(
-      begin: 0.3,
-      duration: 900.ms,
-      curve: Curves.easeOut,
-    );
+    ).animate().slideX(begin: 0.3, duration: 900.ms, curve: Curves.easeOut);
   }
 
   Widget _buildProductionItem(Production production, int index) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: ProductionCardWidget(
-        production: production,
-        onTap: () => _editProduction(production),
-        onDelete: () => _deleteProduction(production.id),
-      ),
-    ).animate(delay: Duration(milliseconds: index * 100))
-     .slideY(begin: 0.2, duration: 500.ms)
-     .fadeIn(duration: 500.ms);
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: ProductionCardWidget(
+            production: production,
+            onTap: () => _editProduction(production),
+            onDelete: () => _deleteProduction(production.id),
+          ),
+        )
+        .animate(delay: Duration(milliseconds: index * 100))
+        .slideY(begin: 0.2, duration: 500.ms)
+        .fadeIn(duration: 500.ms);
   }
 
   Widget _buildEmptyProductionsState() {
@@ -523,10 +511,7 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
               color: AppColors.primaryGreen.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: const Text(
-              '🌱',
-              style: TextStyle(fontSize: 48),
-            ),
+            child: const Text('🌱', style: TextStyle(fontSize: 48)),
           ),
           const SizedBox(height: 16),
           Text(
@@ -539,9 +524,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
           const SizedBox(height: 8),
           Text(
             'Ajoutez vos cultures pour valoriser votre travail',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
         ],
@@ -577,9 +562,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
           const SizedBox(height: 12),
           Text(
             'Valorisez votre travail agricole\nen créant votre profil producteur',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
@@ -600,9 +585,7 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
 
   Widget _buildLoadingState() {
     return const Center(
-      child: CircularProgressIndicator(
-        color: AppColors.primaryGreen,
-      ),
+      child: CircularProgressIndicator(color: AppColors.primaryGreen),
     );
   }
 
@@ -619,21 +602,22 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
           const SizedBox(height: 16),
           Text(
             'Erreur de chargement',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AppColors.statusDanger,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge?.copyWith(color: AppColors.statusDanger),
           ),
           const SizedBox(height: 8),
           Text(
             error,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: () => ref.read(producerProfileProvider.notifier).loadProfile(),
+            onPressed: () =>
+                ref.read(producerProfileProvider.notifier).loadProfile(),
             child: const Text('Réessayer'),
           ),
         ],
@@ -666,8 +650,10 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
       farmingMethods: _farmingMethodsController.text,
     );
 
-    await ref.read(producerProfileProvider.notifier).updateProfile(updatedProfile);
-    
+    await ref
+        .read(producerProfileProvider.notifier)
+        .updateProfile(updatedProfile);
+
     setState(() {
       _isEditing = false;
     });
@@ -685,9 +671,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
   Future<void> _createProfile() async {
     final service = ref.read(producerProfileServiceProvider);
     final newProfile = service.createDefaultProfile();
-    
+
     await ref.read(producerProfileProvider.notifier).createProfile(newProfile);
-    
+
     setState(() {
       _isEditing = true;
     });
@@ -696,6 +682,52 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
 
   Future<void> _updateProfilePhoto() async {
     await ref.read(producerProfileProvider.notifier).updateProfilePhoto();
+  }
+
+  bool _isProfileCompleted(ProducerProfile? profile) {
+    if (profile == null) return false;
+
+    // Le profil est considéré comme complété si :
+    // - Le nom est renseigné
+    // - La description est renseignée
+    // - Au moins une production est ajoutée
+    return profile.name.isNotEmpty &&
+        profile.description?.isNotEmpty == true &&
+        profile.productions.isNotEmpty;
+  }
+
+  Widget _buildClientFinderSection() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: ClientFinderAnimation(
+        onAnimationComplete: () {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Félicitations ! Un client potentiel s\'intéresse à vos produits.',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+                backgroundColor: const Color(0xFF4CAF50),
+                duration: const Duration(seconds: 4),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            );
+          }
+        },
+      ),
+    );
   }
 
   void _addProduction() {
@@ -715,7 +747,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
       builder: (context) => ProductionFormDialog(
         production: production,
         onSave: (updatedProduction) {
-          ref.read(producerProfileProvider.notifier).updateProduction(updatedProduction);
+          ref
+              .read(producerProfileProvider.notifier)
+              .updateProduction(updatedProduction);
         },
       ),
     );
@@ -726,7 +760,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Supprimer la production'),
-        content: const Text('Êtes-vous sûr de vouloir supprimer cette production ?'),
+        content: const Text(
+          'Êtes-vous sûr de vouloir supprimer cette production ?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -735,7 +771,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              ref.read(producerProfileProvider.notifier).deleteProduction(productionId);
+              ref
+                  .read(producerProfileProvider.notifier)
+                  .deleteProduction(productionId);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.statusDanger,
