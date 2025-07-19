@@ -11,6 +11,8 @@ import '../../ui/pages/report_page.dart';
 import '../../ui/pages/map_page.dart';
 import '../../ui/pages/sentinel_page.dart';
 import '../../ui/pages/history_page.dart';
+import '../../ui/pages/producer_dashboard_page.dart';
+import '../../ui/pages/pdf_report_page.dart';
 import '../models/plant_diagnosis.dart';
 
 // Routes constants
@@ -24,6 +26,10 @@ class AppRoutes {
   static const String map = '/map';
   static const String sentinel = '/sentinel';
   static const String history = '/history';
+
+  // Producer routes
+  static const String producerDashboard = '/producer/dashboard';
+  static const String pdfReport = '/pdf-report';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -54,8 +60,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
               position: animation.drive(
-                Tween(begin: const Offset(0.0, 1.0), end: Offset.zero)
-                    .chain(CurveTween(curve: Curves.easeInOut)),
+                Tween(
+                  begin: const Offset(0.0, 1.0),
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeInOut)),
               ),
               child: child,
             );
@@ -73,8 +81,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
               position: animation.drive(
-                Tween(begin: const Offset(0.0, 1.0), end: Offset.zero)
-                    .chain(CurveTween(curve: Curves.easeInOut)),
+                Tween(
+                  begin: const Offset(0.0, 1.0),
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeInOut)),
               ),
               child: child,
             );
@@ -91,18 +101,21 @@ final routerProvider = Provider<GoRouter>((ref) {
           return CustomTransitionPage<void>(
             key: state.pageKey,
             child: DiagnosisPage(diagnosis: diagnosis),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: ScaleTransition(
-                  scale: animation.drive(
-                    Tween(begin: 0.8, end: 1.0)
-                        .chain(CurveTween(curve: Curves.easeInOut)),
-                  ),
-                  child: child,
-                ),
-              );
-            },
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(
+                      scale: animation.drive(
+                        Tween(
+                          begin: 0.8,
+                          end: 1.0,
+                        ).chain(CurveTween(curve: Curves.easeInOut)),
+                      ),
+                      child: child,
+                    ),
+                  );
+                },
           );
         },
       ),
@@ -116,15 +129,18 @@ final routerProvider = Provider<GoRouter>((ref) {
           return CustomTransitionPage<void>(
             key: state.pageKey,
             child: ActionsPage(diagnosis: diagnosis),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return SlideTransition(
-                position: animation.drive(
-                  Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
-                      .chain(CurveTween(curve: Curves.easeInOut)),
-                ),
-                child: child,
-              );
-            },
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return SlideTransition(
+                    position: animation.drive(
+                      Tween(
+                        begin: const Offset(1.0, 0.0),
+                        end: Offset.zero,
+                      ).chain(CurveTween(curve: Curves.easeInOut)),
+                    ),
+                    child: child,
+                  );
+                },
           );
         },
       ),
@@ -138,15 +154,18 @@ final routerProvider = Provider<GoRouter>((ref) {
           return CustomTransitionPage<void>(
             key: state.pageKey,
             child: ReportPage(diagnosis: diagnosis),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return ScaleTransition(
-                scale: animation.drive(
-                  Tween(begin: 0.8, end: 1.0)
-                      .chain(CurveTween(curve: Curves.easeInOut)),
-                ),
-                child: child,
-              );
-            },
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return ScaleTransition(
+                    scale: animation.drive(
+                      Tween(
+                        begin: 0.8,
+                        end: 1.0,
+                      ).chain(CurveTween(curve: Curves.easeInOut)),
+                    ),
+                    child: child,
+                  );
+                },
           );
         },
       ),
@@ -161,8 +180,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
               position: animation.drive(
-                Tween(begin: const Offset(0.0, 1.0), end: Offset.zero)
-                    .chain(CurveTween(curve: Curves.easeInOut)),
+                Tween(
+                  begin: const Offset(0.0, 1.0),
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeInOut)),
               ),
               child: child,
             );
@@ -178,10 +199,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           key: state.pageKey,
           child: const SentinelPage(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
+            return FadeTransition(opacity: animation, child: child);
           },
         ),
       ),
@@ -196,13 +214,64 @@ final routerProvider = Provider<GoRouter>((ref) {
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return SlideTransition(
               position: animation.drive(
-                Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
-                    .chain(CurveTween(curve: Curves.easeInOut)),
+                Tween(
+                  begin: const Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeInOut)),
               ),
               child: child,
             );
           },
         ),
+      ),
+
+      // Producer Dashboard
+      GoRoute(
+        path: AppRoutes.producerDashboard,
+        name: 'producer_dashboard',
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const ProducerDashboardPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: animation.drive(
+                Tween(
+                  begin: const Offset(0.0, 1.0),
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeInOut)),
+              ),
+              child: child,
+            );
+          },
+        ),
+      ),
+
+      // PDF Report
+      GoRoute(
+        path: AppRoutes.pdfReport,
+        name: 'pdf_report',
+        pageBuilder: (context, state) {
+          final diagnosis = state.extra as PlantDiagnosis?;
+          return CustomTransitionPage<void>(
+            key: state.pageKey,
+            child: PdfReportPage(diagnosis: diagnosis),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(
+                      scale: animation.drive(
+                        Tween(
+                          begin: 0.8,
+                          end: 1.0,
+                        ).chain(CurveTween(curve: Curves.easeInOut)),
+                      ),
+                      child: child,
+                    ),
+                  );
+                },
+          );
+        },
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
@@ -210,11 +279,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red,
-            ),
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text(
               'Page non trouvée',

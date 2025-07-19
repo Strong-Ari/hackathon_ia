@@ -9,9 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Configuration de l'orientation (portrait uniquement)
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // Configuration de la barre de statut
   SystemChrome.setSystemUIOverlayStyle(
@@ -22,11 +20,7 @@ void main() async {
     ),
   );
 
-  runApp(
-    const ProviderScope(
-      child: AgriShieldApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: AgriShieldApp()));
 }
 
 class AgriShieldApp extends ConsumerWidget {
@@ -52,7 +46,9 @@ class AgriShieldApp extends ConsumerWidget {
       builder: (context, child) {
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
-            textScaler: const TextScaler.linear(1.0), // Empêche la mise à l'échelle du texte système
+            textScaler: const TextScaler.linear(
+              1.0,
+            ), // Empêche la mise à l'échelle du texte système
           ),
           child: child ?? const SizedBox(),
         );
