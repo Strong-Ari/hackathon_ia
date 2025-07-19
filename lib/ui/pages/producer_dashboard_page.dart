@@ -552,8 +552,9 @@ class _ProducerDashboardPageState extends ConsumerState<ProducerDashboardPage>
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _buildActionCard(
+                child: _buildPremiumActionCard(
                   title: 'Rapport PDF',
+                  subtitle: 'Certifié IA',
                   icon: Icons.picture_as_pdf,
                   color: AppColors.accentGold,
                   onTap: () => _generateReport(),
@@ -603,6 +604,100 @@ class _ProducerDashboardPageState extends ConsumerState<ProducerDashboardPage>
           duration: const Duration(milliseconds: 600),
         )
         .scale(begin: const Offset(0.8, 0.8), end: const Offset(1.0, 1.0));
+  }
+
+  Widget _buildPremiumActionCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  color.withOpacity(0.15),
+                  color.withOpacity(0.05),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: color.withOpacity(0.4), width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.2),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [color, color.withOpacity(0.8)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 28),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: color.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.verified, color: color, size: 12),
+                      const SizedBox(width: 4),
+                      Text(
+                        subtitle,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: color,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+        .animate()
+        .fadeIn(
+          delay: const Duration(milliseconds: 1200),
+          duration: const Duration(milliseconds: 600),
+        )
+        .scale(begin: const Offset(0.8, 0.8), end: const Offset(1.0, 1.0))
+        .shimmer(duration: const Duration(seconds: 3), delay: const Duration(seconds: 2));
   }
 
   Future<void> _refreshData() async {
