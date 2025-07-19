@@ -11,6 +11,7 @@ import '../../core/providers/producer_profile_service.dart';
 import '../widgets/profile_photo_widget.dart';
 import '../widgets/production_card_widget.dart';
 import '../widgets/production_form_dialog.dart';
+import '../widgets/client_finder_animation.dart';
 
 class ProducerProfilePage extends ConsumerStatefulWidget {
   const ProducerProfilePage({super.key});
@@ -155,6 +156,10 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
             )
           else
             SliverToBoxAdapter(child: _buildEmptyProductionsState()),
+
+          // Section recherche de clients - n'apparaît que si le profil est complété
+          if (_isProfileCompleted(profile))
+            SliverToBoxAdapter(child: _buildClientFinderSection()),
 
           // Espacement final
           const SliverToBoxAdapter(child: SizedBox(height: 100)),
@@ -696,6 +701,52 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
 
   Future<void> _updateProfilePhoto() async {
     await ref.read(producerProfileProvider.notifier).updateProfilePhoto();
+  }
+
+  bool _isProfileCompleted(ProducerProfile? profile) {
+    if (profile == null) return false;
+    
+    // Le profil est considéré comme complété si :
+    // - Le nom est renseigné
+    // - La description est renseignée
+    // - Au moins une production est ajoutée
+    return profile.name.isNotEmpty &&
+           profile.description?.isNotEmpty == true &&
+           profile.productions.isNotEmpty;
+  }
+
+  Widget _buildClientFinderSection() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: ClientFinderAnimation(
+        onAnimationComplete: () {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Félicitations ! Un client potentiel s\'intéresse à vos produits.',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+                backgroundColor: const Color(0xFF4CAF50),
+                duration: const Duration(seconds: 4),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            );
+          }
+        },
+      ),
+    );
   }
 
   void _addProduction() {
