@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../widgets/notification_history_panel.dart';
 
-class ProducerDashboardPage extends StatefulWidget {
+class ProducerDashboardPage extends ConsumerStatefulWidget {
   const ProducerDashboardPage({super.key});
 
   @override
-  State<ProducerDashboardPage> createState() => _ProducerDashboardPageState();
+  ConsumerState<ProducerDashboardPage> createState() => _ProducerDashboardPageState();
 }
 
-class _ProducerDashboardPageState extends State<ProducerDashboardPage>
+class _ProducerDashboardPageState extends ConsumerState<ProducerDashboardPage>
     with TickerProviderStateMixin {
   late AnimationController _dashboardController;
   late AnimationController _chartController;
+  final GlobalKey<NotificationHistoryPanelState> _historyPanelKey = GlobalKey();
 
   @override
   void initState() {
@@ -61,33 +64,46 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
             onPressed: () => _refreshData(),
           ),
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () => _showNotifications(),
+            icon: const Icon(Icons.history),
+            onPressed: () => _showNotificationHistory(),
+            tooltip: 'Historique des notifications',
+          ),
+          IconButton(
+            icon: const Icon(Icons.person_outline),
+            onPressed: () => _showProducerProfile(),
+            tooltip: 'Mon Profil',
           ),
         ],
       ),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: _refreshData,
-          child: CustomScrollView(
-            slivers: [
-              // Header avec statut général
-              SliverToBoxAdapter(child: _buildGeneralStatus()),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: RefreshIndicator(
+              onRefresh: _refreshData,
+              child: CustomScrollView(
+                slivers: [
+                  // Header avec statut général
+                  SliverToBoxAdapter(child: _buildGeneralStatus()),
 
-              // Métriques principales
-              SliverToBoxAdapter(child: _buildMainMetrics()),
+                  // Métriques principales
+                  SliverToBoxAdapter(child: _buildMainMetrics()),
 
-              // Graphiques et données détaillées
-              SliverToBoxAdapter(child: _buildChartsSection()),
+                  // Graphiques et données détaillées
+                  SliverToBoxAdapter(child: _buildChartsSection()),
 
-              // Actions rapides
-              SliverToBoxAdapter(child: _buildQuickActions()),
+                  // Actions rapides
+                  SliverToBoxAdapter(child: _buildQuickActions()),
 
-              // Espacement final
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
-            ],
+                  // Espacement final
+                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                ],
+              ),
+            ),
           ),
-        ),
+          
+          // Panneau d'historique des notifications
+          NotificationHistoryPanel(key: _historyPanelKey),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/scan'),
@@ -599,35 +615,12 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
     );
   }
 
-  void _showNotifications() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Notifications',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-            const ListTile(
-              leading: Icon(Icons.check_circle, color: AppColors.statusHealthy),
-              title: Text('Tous les capteurs fonctionnent normalement'),
-              subtitle: Text('Il y a 5 minutes'),
-            ),
-            const ListTile(
-              leading: Icon(Icons.info, color: AppColors.primaryGreen),
-              title: Text('Prochaine irrigation dans 2h'),
-              subtitle: Text('Il y a 1 heure'),
-            ),
-          ],
-        ),
-      ),
-    );
+  void _showNotificationHistory() {
+    _historyPanelKey.currentState?.togglePanel();
+  }
+
+  void _showProducerProfile() {
+    context.push('/producer-profile');
   }
 
   void _generateReport() {
