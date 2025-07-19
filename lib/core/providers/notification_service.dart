@@ -8,9 +8,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/notification_model.dart';
 import '../constants/api_constants.dart';
+import 'notification_history_service.dart';
 
 final notificationServiceProvider = Provider<NotificationService>((ref) {
-  return NotificationService();
+  final historyService = ref.watch(notificationHistoryServiceProvider);
+  return NotificationService(historyService: historyService);
 });
 
 final notificationStreamProvider = StreamProvider<NotificationModel?>((ref) {
@@ -22,6 +24,7 @@ class NotificationService {
   final Dio _dio = Dio();
   final AudioPlayer _audioPlayer = AudioPlayer();
   final AudioPlayer _alertPlayer = AudioPlayer();
+  final NotificationHistoryService? _historyService;
 
   Timer? _pollingTimer;
   final StreamController<NotificationModel?> _notificationController =
@@ -33,7 +36,8 @@ class NotificationService {
   Stream<NotificationModel?> get notificationStream =>
       _notificationController.stream;
 
-  NotificationService() {
+  NotificationService({NotificationHistoryService? historyService})
+      : _historyService = historyService {
     _loadProcessedTimestamps();
   }
 
@@ -128,6 +132,9 @@ class NotificationService {
       // Marquer comme traitée
       _processedTimestamps.add(notification.timestamp);
       await _saveProcessedTimestamps();
+
+      // Ajouter à l'historique
+      await _historyService?.addNotification(notification);
 
       // Émettre la notification dans le stream
       _notificationController.sink.add(notification);
