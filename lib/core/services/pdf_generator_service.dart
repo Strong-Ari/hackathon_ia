@@ -10,7 +10,7 @@ import '../constants/app_colors.dart';
 
 class PdfGeneratorService {
   static const String _logoPath = 'assets/images/agrishield_logo.png';
-  
+
   /// Génère un rapport PDF professionnel stylisé
   static Future<Uint8List> generateStylizedReport({
     String? farmName,
@@ -20,12 +20,12 @@ class PdfGeneratorService {
     Map<String, dynamic>? farmStats,
   }) async {
     final pdf = pw.Document();
-    
+
     // Utiliser les fonts système
     final font = pw.Font.helvetica();
     final boldFont = pw.Font.helveticaBold();
     final titleFont = pw.Font.helveticaBold();
-    
+
     // Données par défaut si non fournies
     farmName ??= 'Exploitation AgriShield';
     location ??= 'Région agricole';
@@ -37,7 +37,7 @@ class PdfGeneratorService {
       'diseaseDetected': 3,
       'monthlyGrowth': 15,
     };
-    
+
     // Page principale
     pdf.addPage(
       pw.MultiPage(
@@ -59,7 +59,7 @@ class PdfGeneratorService {
         footer: (pw.Context context) => _buildFooter(font, context),
       ),
     );
-    
+
     // Page d'annexes
     pdf.addPage(
       pw.MultiPage(
@@ -77,19 +77,26 @@ class PdfGeneratorService {
         footer: (pw.Context context) => _buildFooter(font, context),
       ),
     );
-    
+
     return pdf.save();
   }
-  
+
   /// Header principal avec logo et design premium
-  static pw.Widget _buildHeader(pw.Font titleFont, pw.Font boldFont, pw.Font font) {
+  static pw.Widget _buildHeader(
+    pw.Font titleFont,
+    pw.Font boldFont,
+    pw.Font font,
+  ) {
+    final primaryGreen = PdfColor.fromHex('#2E7D32');
+    final lightGreen = PdfColor.fromHex('#388E3C');
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(25),
       decoration: pw.BoxDecoration(
-        gradient: const pw.LinearGradient(
+        gradient: pw.LinearGradient(
           colors: [
-            PdfColor.fromHex('#2E7D32'), // Vert principal
-            PdfColor.fromHex('#388E3C'), // Vert plus clair
+            primaryGreen, // Vert principal
+            lightGreen, // Vert plus clair
           ],
           begin: pw.Alignment.topLeft,
           end: pw.Alignment.bottomRight,
@@ -123,7 +130,10 @@ class PdfGeneratorService {
               ),
               pw.SizedBox(height: 12),
               pw.Container(
-                padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const pw.EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: pw.BoxDecoration(
                   color: PdfColors.white.shade(0.2),
                   borderRadius: pw.BorderRadius.circular(20),
@@ -149,10 +159,7 @@ class PdfGeneratorService {
                   borderRadius: pw.BorderRadius.circular(40),
                 ),
                 child: pw.Center(
-                  child: pw.Text(
-                    '🌱',
-                    style: pw.TextStyle(fontSize: 40),
-                  ),
+                  child: pw.Text('🌱', style: pw.TextStyle(fontSize: 40)),
                 ),
               ),
               pw.SizedBox(height: 8),
@@ -170,15 +177,26 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Section informations de l'exploitation
-  static pw.Widget _buildFarmInfo(String farmName, String location, double surfaceArea, pw.Font boldFont, pw.Font font) {
+  static pw.Widget _buildFarmInfo(
+    String farmName,
+    String location,
+    double surfaceArea,
+    pw.Font boldFont,
+    pw.Font font,
+  ) {
+    final lightGreenBg = PdfColor.fromHex('#F1F8E9');
+    final mediumGreen = PdfColor.fromHex('#4CAF50');
+    final darkGreen = PdfColor.fromHex('#2E7D32');
+    final paleGreen = PdfColor.fromHex('#E8F5E8');
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(20),
       decoration: pw.BoxDecoration(
-        color: PdfColor.fromHex('#F1F8E9'),
+        color: lightGreenBg,
         borderRadius: pw.BorderRadius.circular(12),
-        border: pw.Border.all(color: PdfColor.fromHex('#4CAF50'), width: 2),
+        border: pw.Border.all(color: mediumGreen, width: 2),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -189,14 +207,11 @@ class PdfGeneratorService {
                 width: 40,
                 height: 40,
                 decoration: pw.BoxDecoration(
-                  color: PdfColor.fromHex('#4CAF50'),
+                  color: mediumGreen,
                   borderRadius: pw.BorderRadius.circular(20),
                 ),
                 child: pw.Center(
-                  child: pw.Text(
-                    '🏛️',
-                    style: pw.TextStyle(fontSize: 20),
-                  ),
+                  child: pw.Text('🏛️', style: pw.TextStyle(fontSize: 20)),
                 ),
               ),
               pw.SizedBox(width: 15),
@@ -205,7 +220,7 @@ class PdfGeneratorService {
                 style: pw.TextStyle(
                   font: boldFont,
                   fontSize: 18,
-                  color: PdfColor.fromHex('#2E7D32'),
+                  color: darkGreen,
                 ),
               ),
             ],
@@ -214,11 +229,23 @@ class PdfGeneratorService {
           pw.Row(
             children: [
               pw.Expanded(
-                child: _buildInfoCard('Nom de l\'exploitation', farmName, '🏡', boldFont, font),
+                child: _buildInfoCard(
+                  'Nom de l\'exploitation',
+                  farmName,
+                  '🏡',
+                  boldFont,
+                  font,
+                ),
               ),
               pw.SizedBox(width: 15),
               pw.Expanded(
-                child: _buildInfoCard('Localisation', location, '📍', boldFont, font),
+                child: _buildInfoCard(
+                  'Localisation',
+                  location,
+                  '📍',
+                  boldFont,
+                  font,
+                ),
               ),
             ],
           ),
@@ -226,11 +253,23 @@ class PdfGeneratorService {
           pw.Row(
             children: [
               pw.Expanded(
-                child: _buildInfoCard('Surface totale', '${surfaceArea}ha', '📐', boldFont, font),
+                child: _buildInfoCard(
+                  'Surface totale',
+                  '${surfaceArea}ha',
+                  '📐',
+                  boldFont,
+                  font,
+                ),
               ),
               pw.SizedBox(width: 15),
               pw.Expanded(
-                child: _buildInfoCard('Date du rapport', '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}', '📅', boldFont, font),
+                child: _buildInfoCard(
+                  'Date du rapport',
+                  '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
+                  '📅',
+                  boldFont,
+                  font,
+                ),
               ),
             ],
           ),
@@ -238,15 +277,23 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Carte d'information individuelle
-  static pw.Widget _buildInfoCard(String label, String value, String emoji, pw.Font boldFont, pw.Font font) {
+  static pw.Widget _buildInfoCard(
+    String label,
+    String value,
+    String emoji,
+    pw.Font boldFont,
+    pw.Font font,
+  ) {
+    final paleGreen = PdfColor.fromHex('#E8F5E8');
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(15),
       decoration: pw.BoxDecoration(
         color: PdfColors.white,
         borderRadius: pw.BorderRadius.circular(10),
-        border: pw.Border.all(color: PdfColor.fromHex('#E8F5E8')),
+        border: pw.Border.all(color: paleGreen),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -278,15 +325,22 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Section statistiques avec graphiques visuels
-  static pw.Widget _buildStatsSection(Map<String, dynamic> stats, pw.Font boldFont, pw.Font font) {
+  static pw.Widget _buildStatsSection(
+    Map<String, dynamic> stats,
+    pw.Font boldFont,
+    pw.Font font,
+  ) {
+    final lightOrangeBg = PdfColor.fromHex('#FFF3E0');
+    final mediumOrange = PdfColor.fromHex('#FF9800');
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(20),
       decoration: pw.BoxDecoration(
-        color: PdfColor.fromHex('#FFF3E0'),
+        color: lightOrangeBg,
         borderRadius: pw.BorderRadius.circular(12),
-        border: pw.Border.all(color: PdfColor.fromHex('#FF9800'), width: 2),
+        border: pw.Border.all(color: mediumOrange, width: 2),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -297,7 +351,7 @@ class PdfGeneratorService {
                 width: 40,
                 height: 40,
                 decoration: pw.BoxDecoration(
-                  color: PdfColor.fromHex('#FF9800'),
+                  color: mediumOrange,
                   borderRadius: pw.BorderRadius.circular(20),
                 ),
                 child: pw.Center(
@@ -318,30 +372,91 @@ class PdfGeneratorService {
           pw.SizedBox(height: 20),
           pw.Row(
             children: [
-              pw.Expanded(child: _buildStatCard('Scans effectués', '${stats['totalScans']}', '📸', PdfColor.fromHex('#2196F3'), boldFont, font)),
+              pw.Expanded(
+                child: _buildStatCard(
+                  'Scans effectués',
+                  '${stats['totalScans']}',
+                  '📸',
+                  PdfColor.fromHex('#2196F3'),
+                  boldFont,
+                  font,
+                ),
+              ),
               pw.SizedBox(width: 10),
-              pw.Expanded(child: _buildStatCard('Précision IA', '${stats['accuracy']}%', '🎯', PdfColor.fromHex('#4CAF50'), boldFont, font)),
+              pw.Expanded(
+                child: _buildStatCard(
+                  'Précision IA',
+                  '${stats['accuracy']}%',
+                  '🎯',
+                  PdfColor.fromHex('#4CAF50'),
+                  boldFont,
+                  font,
+                ),
+              ),
               pw.SizedBox(width: 10),
-              pw.Expanded(child: _buildStatCard('Plants sains', '${stats['healthyPlants']}%', '🌱', PdfColor.fromHex('#8BC34A'), boldFont, font)),
+              pw.Expanded(
+                child: _buildStatCard(
+                  'Plants sains',
+                  '${stats['healthyPlants']}%',
+                  '🌱',
+                  PdfColor.fromHex('#8BC34A'),
+                  boldFont,
+                  font,
+                ),
+              ),
             ],
           ),
           pw.SizedBox(height: 15),
           pw.Row(
             children: [
-              pw.Expanded(child: _buildStatCard('Maladies détectées', '${stats['diseaseDetected']}', '⚠️', PdfColor.fromHex('#F44336'), boldFont, font)),
+              pw.Expanded(
+                child: _buildStatCard(
+                  'Maladies détectées',
+                  '${stats['diseaseDetected']}',
+                  '⚠️',
+                  PdfColor.fromHex('#F44336'),
+                  boldFont,
+                  font,
+                ),
+              ),
               pw.SizedBox(width: 10),
-              pw.Expanded(child: _buildStatCard('Croissance mensuelle', '+${stats['monthlyGrowth']}%', '📈', PdfColor.fromHex('#9C27B0'), boldFont, font)),
+              pw.Expanded(
+                child: _buildStatCard(
+                  'Croissance mensuelle',
+                  '+${stats['monthlyGrowth']}%',
+                  '📈',
+                  PdfColor.fromHex('#9C27B0'),
+                  boldFont,
+                  font,
+                ),
+              ),
               pw.SizedBox(width: 10),
-              pw.Expanded(child: _buildStatCard('Score global', '9.2/10', '⭐', PdfColor.fromHex('#FFD700'), boldFont, font)),
+              pw.Expanded(
+                child: _buildStatCard(
+                  'Score global',
+                  '9.2/10',
+                  '⭐',
+                  PdfColor.fromHex('#FFD700'),
+                  boldFont,
+                  font,
+                ),
+              ),
             ],
           ),
         ],
       ),
     );
   }
-  
+
   /// Carte de statistique individuelle
-  static pw.Widget _buildStatCard(String label, String value, String emoji, PdfColor color, pw.Font boldFont, pw.Font font) {
+  static pw.Widget _buildStatCard(
+    String label,
+    String value,
+    String emoji,
+    PdfColor color,
+    pw.Font boldFont,
+    pw.Font font,
+  ) {
     return pw.Container(
       padding: const pw.EdgeInsets.all(15),
       decoration: pw.BoxDecoration(
@@ -355,11 +470,7 @@ class PdfGeneratorService {
           pw.SizedBox(height: 8),
           pw.Text(
             value,
-            style: pw.TextStyle(
-              font: boldFont,
-              fontSize: 18,
-              color: color,
-            ),
+            style: pw.TextStyle(font: boldFont, fontSize: 18, color: color),
           ),
           pw.SizedBox(height: 4),
           pw.Text(
@@ -375,15 +486,22 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Section diagnostics avec visualisations
-  static pw.Widget _buildDiagnosisSection(List<PlantDiagnosis> diagnoses, pw.Font boldFont, pw.Font font) {
+  static pw.Widget _buildDiagnosisSection(
+    List<PlantDiagnosis> diagnoses,
+    pw.Font boldFont,
+    pw.Font font,
+  ) {
+    final paleGreenBg = PdfColor.fromHex('#E8F5E8');
+    final mediumGreen = PdfColor.fromHex('#4CAF50');
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(20),
       decoration: pw.BoxDecoration(
-        color: PdfColor.fromHex('#E8F5E8'),
+        color: paleGreenBg,
         borderRadius: pw.BorderRadius.circular(12),
-        border: pw.Border.all(color: PdfColor.fromHex('#4CAF50'), width: 2),
+        border: pw.Border.all(color: mediumGreen, width: 2),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -394,7 +512,7 @@ class PdfGeneratorService {
                 width: 40,
                 height: 40,
                 decoration: pw.BoxDecoration(
-                  color: PdfColor.fromHex('#4CAF50'),
+                  color: mediumGreen,
                   borderRadius: pw.BorderRadius.circular(20),
                 ),
                 child: pw.Center(
@@ -419,89 +537,128 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Exemples de diagnostics avec design professionnel
-  static List<pw.Widget> _buildDiagnosisExamples(pw.Font boldFont, pw.Font font) {
+  static List<pw.Widget> _buildDiagnosisExamples(
+    pw.Font boldFont,
+    pw.Font font,
+  ) {
     final examples = [
-      {'plant': 'Tomate', 'condition': 'Saine', 'confidence': '98%', 'color': '#4CAF50', 'emoji': '🍅'},
-      {'plant': 'Maïs', 'condition': 'Mildiou détecté', 'confidence': '92%', 'color': '#FF9800', 'emoji': '🌽'},
-      {'plant': 'Pomme de terre', 'condition': 'Excellente santé', 'confidence': '96%', 'color': '#4CAF50', 'emoji': '🥔'},
+      {
+        'plant': 'Tomate',
+        'condition': 'Saine',
+        'confidence': '98%',
+        'color': '#4CAF50',
+        'emoji': '🍅',
+      },
+      {
+        'plant': 'Maïs',
+        'condition': 'Mildiou détecté',
+        'confidence': '92%',
+        'color': '#FF9800',
+        'emoji': '🌽',
+      },
+      {
+        'plant': 'Pomme de terre',
+        'condition': 'Excellente santé',
+        'confidence': '96%',
+        'color': '#4CAF50',
+        'emoji': '🥔',
+      },
     ];
-    
-    return examples.map((example) => pw.Container(
-      margin: const pw.EdgeInsets.only(bottom: 12),
-      padding: const pw.EdgeInsets.all(15),
-      decoration: pw.BoxDecoration(
-        color: PdfColors.white,
-        borderRadius: pw.BorderRadius.circular(10),
-        border: pw.Border.all(color: PdfColor.fromHex(example['color']!).shade(0.3)),
-      ),
-      child: pw.Row(
-        children: [
-          pw.Container(
-            width: 50,
-            height: 50,
+
+    return examples
+        .map(
+          (example) => pw.Container(
+            margin: const pw.EdgeInsets.only(bottom: 12),
+            padding: const pw.EdgeInsets.all(15),
             decoration: pw.BoxDecoration(
-              color: PdfColor.fromHex(example['color']!).shade(0.1),
-              borderRadius: pw.BorderRadius.circular(25),
+              color: PdfColors.white,
+              borderRadius: pw.BorderRadius.circular(10),
+              border: pw.Border.all(
+                color: PdfColor.fromHex(example['color']!).shade(0.3),
+              ),
             ),
-            child: pw.Center(
-              child: pw.Text(example['emoji']!, style: pw.TextStyle(fontSize: 24)),
-            ),
-          ),
-          pw.SizedBox(width: 15),
-          pw.Expanded(
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
+            child: pw.Row(
               children: [
-                pw.Text(
-                  example['plant']!,
-                  style: pw.TextStyle(
-                    font: boldFont,
-                    fontSize: 14,
-                    color: PdfColor.fromHex('#333333'),
+                pw.Container(
+                  width: 50,
+                  height: 50,
+                  decoration: pw.BoxDecoration(
+                    color: PdfColor.fromHex(example['color']!).shade(0.1),
+                    borderRadius: pw.BorderRadius.circular(25),
+                  ),
+                  child: pw.Center(
+                    child: pw.Text(
+                      example['emoji']!,
+                      style: pw.TextStyle(fontSize: 24),
+                    ),
                   ),
                 ),
-                pw.SizedBox(height: 4),
-                pw.Text(
-                  example['condition']!,
-                  style: pw.TextStyle(
-                    font: font,
-                    fontSize: 12,
+                pw.SizedBox(width: 15),
+                pw.Expanded(
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text(
+                        example['plant']!,
+                        style: pw.TextStyle(
+                          font: boldFont,
+                          fontSize: 14,
+                          color: PdfColor.fromHex('#333333'),
+                        ),
+                      ),
+                      pw.SizedBox(height: 4),
+                      pw.Text(
+                        example['condition']!,
+                        style: pw.TextStyle(
+                          font: font,
+                          fontSize: 12,
+                          color: PdfColor.fromHex(example['color']!),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                pw.Container(
+                  padding: const pw.EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: pw.BoxDecoration(
                     color: PdfColor.fromHex(example['color']!),
+                    borderRadius: pw.BorderRadius.circular(15),
+                  ),
+                  child: pw.Text(
+                    example['confidence']!,
+                    style: pw.TextStyle(
+                      font: boldFont,
+                      fontSize: 10,
+                      color: PdfColors.white,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          pw.Container(
-            padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: pw.BoxDecoration(
-              color: PdfColor.fromHex(example['color']!),
-              borderRadius: pw.BorderRadius.circular(15),
-            ),
-            child: pw.Text(
-              example['confidence']!,
-              style: pw.TextStyle(
-                font: boldFont,
-                fontSize: 10,
-                color: PdfColors.white,
-              ),
-            ),
-          ),
-        ],
-      ),
-    )).toList();
+        )
+        .toList();
   }
-  
+
   /// Section recommandations personnalisées
-  static pw.Widget _buildRecommendationsSection(pw.Font boldFont, pw.Font font) {
+  static pw.Widget _buildRecommendationsSection(
+    pw.Font boldFont,
+    pw.Font font,
+  ) {
+    final lightBlueBg = PdfColor.fromHex('#E3F2FD');
+    final mediumBlue = PdfColor.fromHex('#2196F3');
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(20),
       decoration: pw.BoxDecoration(
-        color: PdfColor.fromHex('#E3F2FD'),
+        color: lightBlueBg,
         borderRadius: pw.BorderRadius.circular(12),
-        border: pw.Border.all(color: PdfColor.fromHex('#2196F3'), width: 2),
+        border: pw.Border.all(color: mediumBlue, width: 2),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -512,7 +669,7 @@ class PdfGeneratorService {
                 width: 40,
                 height: 40,
                 decoration: pw.BoxDecoration(
-                  color: PdfColor.fromHex('#2196F3'),
+                  color: mediumBlue,
                   borderRadius: pw.BorderRadius.circular(20),
                 ),
                 child: pw.Center(
@@ -536,91 +693,121 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Items de recommandations avec priorités
-  static List<pw.Widget> _buildRecommendationItems(pw.Font boldFont, pw.Font font) {
+  static List<pw.Widget> _buildRecommendationItems(
+    pw.Font boldFont,
+    pw.Font font,
+  ) {
     final recommendations = [
-      {'title': 'Traitement préventif immédiat', 'desc': 'Appliquer un fongicide sur les zones détectées avec mildiou', 'priority': 'Urgent', 'color': '#F44336'},
-      {'title': 'Irrigation optimisée', 'desc': 'Ajuster le système d\'irrigation pour les parcelles Nord-Est', 'priority': 'Priorité', 'color': '#FF9800'},
-      {'title': 'Surveillance renforcée', 'desc': 'Scanner hebdomadaire des plants de tomates zone B', 'priority': 'Normal', 'color': '#4CAF50'},
+      {
+        'title': 'Traitement préventif immédiat',
+        'desc': 'Appliquer un fongicide sur les zones détectées avec mildiou',
+        'priority': 'Urgent',
+        'color': '#F44336',
+      },
+      {
+        'title': 'Irrigation optimisée',
+        'desc': 'Ajuster le système d\'irrigation pour les parcelles Nord-Est',
+        'priority': 'Priorité',
+        'color': '#FF9800',
+      },
+      {
+        'title': 'Surveillance renforcée',
+        'desc': 'Scanner hebdomadaire des plants de tomates zone B',
+        'priority': 'Normal',
+        'color': '#4CAF50',
+      },
     ];
-    
-    return recommendations.map((rec) => pw.Container(
-      margin: const pw.EdgeInsets.only(bottom: 12),
-      padding: const pw.EdgeInsets.all(15),
-      decoration: pw.BoxDecoration(
-        color: PdfColors.white,
-        borderRadius: pw.BorderRadius.circular(10),
-        border: pw.Border.all(color: PdfColor.fromHex(rec['color']!).shade(0.3)),
-      ),
-      child: pw.Row(
-        children: [
-          pw.Container(
-            width: 8,
-            height: 40,
+
+    return recommendations
+        .map(
+          (rec) => pw.Container(
+            margin: const pw.EdgeInsets.only(bottom: 12),
+            padding: const pw.EdgeInsets.all(15),
             decoration: pw.BoxDecoration(
-              color: PdfColor.fromHex(rec['color']!),
-              borderRadius: pw.BorderRadius.circular(4),
+              color: PdfColors.white,
+              borderRadius: pw.BorderRadius.circular(10),
+              border: pw.Border.all(
+                color: PdfColor.fromHex(rec['color']!).shade(0.3),
+              ),
             ),
-          ),
-          pw.SizedBox(width: 15),
-          pw.Expanded(
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
+            child: pw.Row(
               children: [
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text(
-                      rec['title']!,
-                      style: pw.TextStyle(
-                        font: boldFont,
-                        fontSize: 12,
-                        color: PdfColor.fromHex('#333333'),
+                pw.Container(
+                  width: 8,
+                  height: 40,
+                  decoration: pw.BoxDecoration(
+                    color: PdfColor.fromHex(rec['color']!),
+                    borderRadius: pw.BorderRadius.circular(4),
+                  ),
+                ),
+                pw.SizedBox(width: 15),
+                pw.Expanded(
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Row(
+                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                        children: [
+                          pw.Text(
+                            rec['title']!,
+                            style: pw.TextStyle(
+                              font: boldFont,
+                              fontSize: 12,
+                              color: PdfColor.fromHex('#333333'),
+                            ),
+                          ),
+                          pw.Container(
+                            padding: const pw.EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: pw.BoxDecoration(
+                              color: PdfColor.fromHex(rec['color']!).shade(0.1),
+                              borderRadius: pw.BorderRadius.circular(10),
+                            ),
+                            child: pw.Text(
+                              rec['priority']!,
+                              style: pw.TextStyle(
+                                font: font,
+                                fontSize: 8,
+                                color: PdfColor.fromHex(rec['color']!),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    pw.Container(
-                      padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: pw.BoxDecoration(
-                        color: PdfColor.fromHex(rec['color']!).shade(0.1),
-                        borderRadius: pw.BorderRadius.circular(10),
-                      ),
-                      child: pw.Text(
-                        rec['priority']!,
+                      pw.SizedBox(height: 6),
+                      pw.Text(
+                        rec['desc']!,
                         style: pw.TextStyle(
                           font: font,
-                          fontSize: 8,
-                          color: PdfColor.fromHex(rec['color']!),
+                          fontSize: 10,
+                          color: PdfColor.fromHex('#666666'),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                pw.SizedBox(height: 6),
-                pw.Text(
-                  rec['desc']!,
-                  style: pw.TextStyle(
-                    font: font,
-                    fontSize: 10,
-                    color: PdfColor.fromHex('#666666'),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-        ],
-      ),
-    )).toList();
+        )
+        .toList();
   }
-  
+
   /// Section analyse des tendances
   static pw.Widget _buildTrendAnalysis(pw.Font boldFont, pw.Font font) {
+    final lightPurpleBg = PdfColor.fromHex('#F3E5F5');
+    final mediumPurple = PdfColor.fromHex('#9C27B0');
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(20),
       decoration: pw.BoxDecoration(
-        color: PdfColor.fromHex('#F3E5F5'),
+        color: lightPurpleBg,
         borderRadius: pw.BorderRadius.circular(12),
-        border: pw.Border.all(color: PdfColor.fromHex('#9C27B0'), width: 2),
+        border: pw.Border.all(color: mediumPurple, width: 2),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -631,7 +818,7 @@ class PdfGeneratorService {
                 width: 40,
                 height: 40,
                 decoration: pw.BoxDecoration(
-                  color: PdfColor.fromHex('#9C27B0'),
+                  color: mediumPurple,
                   borderRadius: pw.BorderRadius.circular(20),
                 ),
                 child: pw.Center(
@@ -682,7 +869,7 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Graphique de tendance simplifié
   static pw.Widget _buildTrendChart(pw.Font font) {
     return pw.Container(
@@ -726,18 +913,16 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Header pour la page d'annexes
   static pw.Widget _buildAnnexesHeader(pw.Font titleFont) {
+    final darkGray = PdfColor.fromHex('#37474F');
+    final gray = PdfColor.fromHex('#455A64');
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(20),
       decoration: pw.BoxDecoration(
-        gradient: const pw.LinearGradient(
-          colors: [
-            PdfColor.fromHex('#37474F'),
-            PdfColor.fromHex('#455A64'),
-          ],
-        ),
+        gradient: pw.LinearGradient(colors: [darkGray, gray]),
         borderRadius: pw.BorderRadius.circular(12),
       ),
       child: pw.Center(
@@ -753,15 +938,18 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Section méthodologie
   static pw.Widget _buildMethodologySection(pw.Font boldFont, pw.Font font) {
+    final lightGrayBg = PdfColor.fromHex('#FAFAFA');
+    final grayBorder = PdfColor.fromHex('#E0E0E0');
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(20),
       decoration: pw.BoxDecoration(
-        color: PdfColor.fromHex('#FAFAFA'),
+        color: lightGrayBg,
         borderRadius: pw.BorderRadius.circular(10),
-        border: pw.Border.all(color: PdfColor.fromHex('#E0E0E0')),
+        border: pw.Border.all(color: grayBorder),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -796,15 +984,18 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Détails techniques
   static pw.Widget _buildTechnicalDetails(pw.Font boldFont, pw.Font font) {
+    final lightGrayBg = PdfColor.fromHex('#FAFAFA');
+    final grayBorder = PdfColor.fromHex('#E0E0E0');
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(20),
       decoration: pw.BoxDecoration(
-        color: PdfColor.fromHex('#FAFAFA'),
+        color: lightGrayBg,
         borderRadius: pw.BorderRadius.circular(10),
-        border: pw.Border.all(color: PdfColor.fromHex('#E0E0E0')),
+        border: pw.Border.all(color: grayBorder),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -830,15 +1021,18 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Section certification
   static pw.Widget _buildCertificationSection(pw.Font boldFont, pw.Font font) {
+    final paleGreenBg = PdfColor.fromHex('#E8F5E8');
+    final mediumGreen = PdfColor.fromHex('#4CAF50');
+
     return pw.Container(
       padding: const pw.EdgeInsets.all(20),
       decoration: pw.BoxDecoration(
-        color: PdfColor.fromHex('#E8F5E8'),
+        color: paleGreenBg,
         borderRadius: pw.BorderRadius.circular(10),
-        border: pw.Border.all(color: PdfColor.fromHex('#4CAF50')),
+        border: pw.Border.all(color: mediumGreen),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -858,20 +1052,30 @@ class PdfGeneratorService {
               pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('Signature numérique :', style: pw.TextStyle(font: font, fontSize: 10)),
-                  pw.Text('SHA-256: ${DateTime.now().millisecondsSinceEpoch.toRadixString(16).toUpperCase()}', 
-                    style: pw.TextStyle(font: boldFont, fontSize: 8)),
+                  pw.Text(
+                    'Signature numérique :',
+                    style: pw.TextStyle(font: font, fontSize: 10),
+                  ),
+                  pw.Text(
+                    'SHA-256: ${DateTime.now().millisecondsSinceEpoch.toRadixString(16).toUpperCase()}',
+                    style: pw.TextStyle(font: boldFont, fontSize: 8),
+                  ),
                   pw.SizedBox(height: 8),
-                  pw.Text('Horodatage certifié :', style: pw.TextStyle(font: font, fontSize: 10)),
-                  pw.Text('${DateTime.now().toIso8601String()}Z', 
-                    style: pw.TextStyle(font: boldFont, fontSize: 8)),
+                  pw.Text(
+                    'Horodatage certifié :',
+                    style: pw.TextStyle(font: font, fontSize: 10),
+                  ),
+                  pw.Text(
+                    '${DateTime.now().toIso8601String()}Z',
+                    style: pw.TextStyle(font: boldFont, fontSize: 8),
+                  ),
                 ],
               ),
               pw.Container(
                 width: 60,
                 height: 60,
                 decoration: pw.BoxDecoration(
-                  border: pw.Border.all(color: PdfColor.fromHex('#4CAF50'), width: 2),
+                  border: pw.Border.all(color: mediumGreen, width: 2),
                 ),
                 child: pw.Center(
                   child: pw.Text(
@@ -887,24 +1091,34 @@ class PdfGeneratorService {
       ),
     );
   }
-  
+
   /// Footer avec informations légales
   static pw.Widget _buildFooter(pw.Font font, pw.Context context) {
     return pw.Container(
       padding: const pw.EdgeInsets.symmetric(vertical: 10),
       decoration: pw.BoxDecoration(
-        border: pw.Border(top: pw.BorderSide(color: PdfColor.fromHex('#E0E0E0'))),
+        border: pw.Border(
+          top: pw.BorderSide(color: PdfColor.fromHex('#E0E0E0')),
+        ),
       ),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
           pw.Text(
             'AgriShield AI © ${DateTime.now().year} - Rapport confidentiel',
-            style: pw.TextStyle(font: font, fontSize: 8, color: PdfColor.fromHex('#999999')),
+            style: pw.TextStyle(
+              font: font,
+              fontSize: 8,
+              color: PdfColor.fromHex('#999999'),
+            ),
           ),
           pw.Text(
             'Page ${context.pageNumber}',
-            style: pw.TextStyle(font: font, fontSize: 8, color: PdfColor.fromHex('#999999')),
+            style: pw.TextStyle(
+              font: font,
+              fontSize: 8,
+              color: PdfColor.fromHex('#999999'),
+            ),
           ),
         ],
       ),
