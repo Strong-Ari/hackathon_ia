@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/providers/router_provider.dart';
 import 'ui/theme/app_theme.dart';
+import 'ui/widgets/notification_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,7 +51,9 @@ class AgriShieldApp extends ConsumerWidget {
               1.0,
             ), // Empêche la mise à l'échelle du texte système
           ),
-          child: child ?? const SizedBox(),
+          child: NotificationOverlay(
+            child: child ?? const SizedBox(),
+          ),
         );
       },
     );

@@ -421,6 +421,43 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ],
         ),
         const SizedBox(height: 20),
+        
+        // Bouton discret pour les notifications de test
+        GestureDetector(
+          onTap: () => context.push(AppRoutes.notificationTest),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.grey.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.grey.withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.notifications_outlined,
+                  size: 14,
+                  color: Colors.grey[600],
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  'Test Notifications',
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: Colors.grey[600],
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        
+        const SizedBox(height: 16),
+        
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(

@@ -13,6 +13,7 @@ import '../../ui/pages/sentinel_page.dart';
 import '../../ui/pages/history_page.dart';
 import '../../ui/pages/producer_dashboard_page.dart';
 import '../../ui/pages/pdf_report_page.dart';
+import '../../ui/pages/notification_test_page.dart';
 import '../models/plant_diagnosis.dart';
 
 // Routes constants
@@ -30,6 +31,9 @@ class AppRoutes {
   // Producer routes
   static const String producerDashboard = '/producer/dashboard';
   static const String pdfReport = '/pdf-report';
+  
+  // Test routes
+  static const String notificationTest = '/notification-test';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -272,6 +276,27 @@ final routerProvider = Provider<GoRouter>((ref) {
                 },
           );
         },
+      ),
+
+      // Notification Test Page
+      GoRoute(
+        path: AppRoutes.notificationTest,
+        name: 'notification_test',
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const NotificationTestPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: animation.drive(
+                Tween(
+                  begin: const Offset(1.0, 0.0),
+                  end: Offset.zero,
+                ).chain(CurveTween(curve: Curves.easeInOut)),
+              ),
+              child: child,
+            );
+          },
+        ),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
