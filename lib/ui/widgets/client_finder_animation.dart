@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'client_match_modal.dart';
+import 'client_chat_interface.dart';
 
 class ClientFinderAnimation extends StatefulWidget {
   final VoidCallback? onAnimationComplete;
@@ -18,6 +20,7 @@ class _ClientFinderAnimationState extends State<ClientFinderAnimation>
   late AnimationController _mapController;
   bool _isSearching = false;
   bool _foundClient = false;
+  bool _showModal = false;
 
   // Position simulée du producteur au centre
   static const Offset producerPosition = Offset(0.5, 0.5);
@@ -111,9 +114,12 @@ class _ClientFinderAnimationState extends State<ClientFinderAnimation>
       // Démarrer l'animation de pulsation du client trouvé
       _pulseController.repeat(reverse: true);
 
-      // Arrêter l'animation après 3 secondes et notifier
-      Future.delayed(const Duration(seconds: 3), () {
+      // Afficher le modal après 2 secondes
+      Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
+          setState(() {
+            _showModal = true;
+          });
           widget.onAnimationComplete?.call();
         }
       });
@@ -125,29 +131,86 @@ class _ClientFinderAnimationState extends State<ClientFinderAnimation>
       _isSearching = false;
       _foundClient = false;
       _matchedClient = null;
+      _showModal = false;
     });
     _radarController.reset();
     _pulseController.reset();
     _mapController.reset();
   }
 
+  void _onAcceptClient() {
+    if (_matchedClient == null) return;
+    
+    setState(() {
+      _showModal = false;
+    });
+
+    // Naviguer vers l'interface de chat
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ClientChatInterface(
+          client: _matchedClient!,
+          onClose: () {
+            Navigator.of(context).pop();
+            _resetAnimation();
+          },
+        ),
+      ),
+    );
+  }
+
+  void _onRefuseClient() {
+    setState(() {
+      _showModal = false;
+    });
+
+    // Afficher le toast
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          children: [
+            Icon(Icons.info, color: Colors.white),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Client refusé. Vous pouvez relancer une recherche.',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: const Color(0xFF2196F3),
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
+
+    // Réinitialiser l'animation
+    _resetAnimation();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return Stack(
+      children: [
+        Container(
+          margin: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
+          child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // En-tête
@@ -294,6 +357,17 @@ class _ClientFinderAnimationState extends State<ClientFinderAnimation>
             ),
         ],
       ),
+        
+        // Modal de décision
+        if (_showModal && _matchedClient != null)
+          Positioned.fill(
+            child: ClientMatchModal(
+              client: _matchedClient!,
+              onAccept: _onAcceptClient,
+              onRefuse: _onRefuseClient,
+            ),
+          ),
+      ],
     );
   }
 
