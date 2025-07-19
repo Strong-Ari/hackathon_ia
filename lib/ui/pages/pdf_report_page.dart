@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:printing/printing.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/models/plant_diagnosis.dart';
+import '../../core/services/pdf_generator_service.dart';
 
 class PdfReportPage extends StatefulWidget {
   final PlantDiagnosis? diagnosis;
@@ -20,8 +23,15 @@ class _PdfReportPageState extends State<PdfReportPage>
   late AnimationController _progressController;
 
   bool _isGenerating = false;
+  bool _isPdfGenerated = false;
   double _generationProgress = 0.0;
   String _currentStep = '';
+  Uint8List? _generatedPdfData;
+  
+  // Informations de l'exploitation
+  String _farmName = 'Mon Exploitation AgriShield';
+  String _farmLocation = 'Région Centre, Burkina Faso';
+  double _surfaceArea = 5.2;
 
   @override
   void initState() {
@@ -48,38 +58,59 @@ class _PdfReportPageState extends State<PdfReportPage>
   Future<void> _generateReport() async {
     setState(() {
       _isGenerating = true;
+      _isPdfGenerated = false;
       _generationProgress = 0.0;
       _currentStep = 'Préparation des données...';
     });
 
+    _progressController.reset();
     _progressController.forward();
 
-    // Simulation du processus de génération
+    // Simulation du processus de génération avec vraie génération PDF
     final steps = [
       'Préparation des données...',
-      'Analyse des diagnostics...',
+      'Analyse des diagnostics IA...',
       'Génération de la heatmap...',
       'Compilation des recommandations...',
-      'Création du document PDF...',
-      'Signature numérique IA...',
-      'Finalisation...',
+      'Création du document PDF stylisé...',
+      'Application de la signature numérique...',
+      'Optimisation et compression...',
+      'Finalisation du rapport...',
     ];
 
-    for (int i = 0; i < steps.length; i++) {
+    try {
+      for (int i = 0; i < steps.length; i++) {
+        setState(() {
+          _currentStep = steps[i];
+          _generationProgress = (i + 1) / steps.length;
+        });
+        await Future.delayed(const Duration(milliseconds: 600));
+        
+        // Générer le PDF à l'étape de création
+        if (i == 4) {
+          _generatedPdfData = await PdfGeneratorService.generateStylizedReport(
+            farmName: _farmName,
+            location: _farmLocation,
+            surfaceArea: _surfaceArea,
+            diagnoses: widget.diagnosis != null ? [widget.diagnosis!] : null,
+          );
+        }
+      }
+
       setState(() {
-        _currentStep = steps[i];
-        _generationProgress = (i + 1) / steps.length;
+        _isGenerating = false;
+        _isPdfGenerated = true;
       });
-      await Future.delayed(const Duration(milliseconds: 500));
-    }
 
-    setState(() {
-      _isGenerating = false;
-    });
-
-    // Afficher le succès
-    if (mounted) {
-      _showSuccessDialog();
+      // Afficher le succès avec options avancées
+      if (mounted) {
+        _showSuccessDialog();
+      }
+    } catch (e) {
+      setState(() {
+        _isGenerating = false;
+      });
+      _showErrorDialog(e.toString());
     }
   }
 
@@ -133,14 +164,29 @@ class _PdfReportPageState extends State<PdfReportPage>
                     child: const Text('Fermer'),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 Expanded(
-                  child: ElevatedButton(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _previewPdf();
+                    },
+                    icon: const Icon(Icons.visibility),
+                    label: const Text('Aperçu'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.accentGold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton.icon(
                     onPressed: () {
                       Navigator.of(context).pop();
                       _shareReport();
                     },
-                    child: const Text('Partager'),
+                    icon: const Icon(Icons.share),
+                    label: const Text('Partager'),
                   ),
                 ),
               ],
@@ -151,12 +197,75 @@ class _PdfReportPageState extends State<PdfReportPage>
     );
   }
 
-  void _shareReport() {
-    // Logique de partage du rapport
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Ouverture de l\'application de partage...'),
-        backgroundColor: AppColors.primaryGreen,
+  void _shareReport() async {
+    if (_generatedPdfData != null) {
+      try {
+        await Printing.sharePdf(
+          bytes: _generatedPdfData!,
+          filename: 'rapport_agrishield_${DateTime.now().millisecondsSinceEpoch}.pdf',
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors du partage: $e'),
+            backgroundColor: AppColors.statusCritical,
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez d\'abord générer le rapport'),
+          backgroundColor: AppColors.statusWarning,
+        ),
+      );
+    }
+  }
+
+  void _previewPdf() async {
+    if (_generatedPdfData != null) {
+      try {
+        await Printing.layoutPdf(
+          onLayout: (format) async => _generatedPdfData!,
+          name: 'Aperçu Rapport AgriShield',
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur lors de l\'aperçu: $e'),
+            backgroundColor: AppColors.statusCritical,
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Veuillez d\'abord générer le rapport'),
+          backgroundColor: AppColors.statusWarning,
+        ),
+      );
+    }
+  }
+
+  void _showErrorDialog(String error) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Icon(Icons.error, color: AppColors.statusCritical),
+            const SizedBox(width: 12),
+            const Text('Erreur de génération'),
+          ],
+        ),
+        content: Text('Une erreur s\'est produite lors de la génération du PDF:\n\n$error'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }
@@ -183,6 +292,11 @@ class _PdfReportPageState extends State<PdfReportPage>
 
               // Preview du contenu du rapport
               _buildReportPreview(),
+
+              const SizedBox(height: 24),
+
+              // Personnalisation des informations
+              _buildFarmInfoCustomization(),
 
               const SizedBox(height: 24),
 
@@ -529,28 +643,328 @@ class _PdfReportPageState extends State<PdfReportPage>
   }
 
   Widget _buildGenerateButton() {
-    return SizedBox(
+    return Column(
+      children: [
+        // Bouton principal de génération
+        Container(
           width: double.infinity,
+          height: 70,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primaryGreen,
+                AppColors.primaryGreenDark,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryGreen.withOpacity(0.4),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
           child: ElevatedButton.icon(
             onPressed: _generateReport,
-            icon: const Icon(Icons.picture_as_pdf),
-            label: const Text('Générer le rapport PDF'),
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.picture_as_pdf, size: 24),
+            ),
+            label: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Générer le rapport PDF',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Version professionnelle certifiée IA',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: Colors.white.withOpacity(0.8),
+                  ),
+                ),
+              ],
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryGreen,
+              backgroundColor: Colors.transparent,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              shadowColor: Colors.transparent,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
           ),
-        )
-        .animate(controller: _animationController)
-        .fadeIn(
-          delay: const Duration(milliseconds: 1200),
-          duration: const Duration(milliseconds: 600),
-        )
-        .scale(begin: const Offset(0.9, 0.9), end: const Offset(1.0, 1.0));
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Boutons d'actions rapides
+        if (_isPdfGenerated) ...[
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _previewPdf,
+                  icon: const Icon(Icons.visibility),
+                  label: const Text('Aperçu'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.accentGold,
+                    side: BorderSide(color: AppColors.accentGold),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _shareReport,
+                  icon: const Icon(Icons.share),
+                  label: const Text('Partager'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.accentGold,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    ).animate(controller: _animationController)
+     .fadeIn(
+       delay: const Duration(milliseconds: 1200),
+       duration: const Duration(milliseconds: 600),
+     )
+     .scale(begin: const Offset(0.9, 0.9), end: const Offset(1.0, 1.0));
+  }
+
+  Widget _buildFarmInfoCustomization() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.primaryGreenLight.withOpacity(0.1),
+            AppColors.accentGold.withOpacity(0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primaryGreen.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.primaryGreen, AppColors.primaryGreenDark],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Personnaliser les informations',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryGreen,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          
+          _buildCustomField(
+            'Nom de l\'exploitation',
+            _farmName,
+            Icons.agriculture,
+            (value) => setState(() => _farmName = value),
+          ),
+          
+          const SizedBox(width: 16),
+          
+          _buildCustomField(
+            'Localisation',
+            _farmLocation,
+            Icons.location_on,
+            (value) => setState(() => _farmLocation = value),
+          ),
+          
+          const SizedBox(width: 16),
+          
+          Row(
+            children: [
+              Expanded(
+                child: _buildSurfaceField(),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.statusHealthy.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.statusHealthy.withOpacity(0.3)),
+                  ),
+                  child: Column(
+                    children: [
+                      Icon(Icons.verified_user, color: AppColors.statusHealthy, size: 24),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Certification IA',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.statusHealthy,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ).animate(controller: _animationController)
+     .fadeIn(delay: const Duration(milliseconds: 800))
+     .slideY(begin: 0.3, end: 0);
+  }
+
+  Widget _buildCustomField(String label, String value, IconData icon, Function(String) onChanged) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 16, color: AppColors.primaryGreen),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryGreen,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            initialValue: value,
+            onChanged: onChanged,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.primaryGreen.withOpacity(0.3)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.primaryGreen.withOpacity(0.3)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.primaryGreen, width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSurfaceField() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primaryGreen.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.straighten, size: 16, color: AppColors.primaryGreen),
+              const SizedBox(width: 8),
+              Text(
+                'Surface (hectares)',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryGreen,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () => setState(() {
+                  if (_surfaceArea > 0.1) _surfaceArea -= 0.1;
+                }),
+                icon: const Icon(Icons.remove_circle),
+                color: AppColors.statusWarning,
+                iconSize: 32,
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    '${_surfaceArea.toStringAsFixed(1)} ha',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryGreen,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () => setState(() => _surfaceArea += 0.1),
+                icon: const Icon(Icons.add_circle),
+                color: AppColors.statusHealthy,
+                iconSize: 32,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildGenerationProgress() {
