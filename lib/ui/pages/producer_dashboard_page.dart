@@ -3,15 +3,18 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../widgets/producer_bottom_nav.dart';
+import '../../core/providers/notification_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProducerDashboardPage extends StatefulWidget {
+class ProducerDashboardPage extends ConsumerStatefulWidget {
   const ProducerDashboardPage({super.key});
 
   @override
-  State<ProducerDashboardPage> createState() => _ProducerDashboardPageState();
+  ConsumerState<ProducerDashboardPage> createState() => _ProducerDashboardPageState();
 }
 
-class _ProducerDashboardPageState extends State<ProducerDashboardPage>
+class _ProducerDashboardPageState extends ConsumerState<ProducerDashboardPage>
     with TickerProviderStateMixin {
   late AnimationController _dashboardController;
   late AnimationController _chartController;
@@ -62,7 +65,7 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
           ),
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
-            onPressed: () => _showNotifications(),
+            onPressed: () => context.push('/notifications/history'),
           ),
         ],
       ),
@@ -89,6 +92,7 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
           ),
         ),
       ),
+      bottomNavigationBar: const ProducerBottomNav(currentIndex: 0),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/scan'),
         icon: const Icon(Icons.camera_alt),
@@ -545,6 +549,21 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
               ),
             ],
           ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildActionCard(
+                  title: 'Test Notifications',
+                  icon: Icons.notification_add,
+                  color: Colors.blue,
+                  onTap: () => _addSampleNotifications(),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Container()), // Espace vide
+            ],
+          ),
         ],
       ),
     );
@@ -632,5 +651,15 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
 
   void _generateReport() {
     context.push('/pdf-report');
+  }
+
+  Future<void> _addSampleNotifications() async {
+    await ref.read(notificationHistoryProvider.notifier).addSampleNotifications();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Notifications d\'exemple ajoutées'),
+        backgroundColor: AppColors.primaryGreen,
+      ),
+    );
   }
 }
