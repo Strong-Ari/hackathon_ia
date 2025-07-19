@@ -7,10 +7,15 @@ import 'package:intl/intl.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/models/producer_profile_model.dart';
+import '../../core/models/client_model.dart';
 import '../../core/providers/producer_profile_service.dart';
+import '../../core/providers/client_provider.dart';
 import '../widgets/profile_photo_widget.dart';
 import '../widgets/production_card_widget.dart';
 import '../widgets/production_form_dialog.dart';
+import '../widgets/client_search_animation.dart';
+import '../widgets/client_selection_modal.dart';
+import 'chat_page.dart';
 
 class ProducerProfilePage extends ConsumerStatefulWidget {
   const ProducerProfilePage({super.key});
@@ -142,6 +147,9 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
 
           // Informations détaillées
           SliverToBoxAdapter(child: _buildDetailsSection(profile)),
+
+          // Section Trouver des clients
+          SliverToBoxAdapter(child: _buildFindClientsSection()),
 
           // Productions
           SliverToBoxAdapter(child: _buildProductionsHeader(profile)),
@@ -549,6 +557,202 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
     );
   }
 
+  Widget _buildFindClientsSection() {
+    final clientSearchState = ref.watch(clientSearchProvider);
+    
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.cardLight,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.people_outline,
+                color: AppColors.primaryGreen,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Trouver des clients',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryGreen,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Découvrez des clients intéressés par vos produits',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          
+          // Animation de recherche ou bouton
+          if (clientSearchState.isSearching)
+            ClientSearchAnimation(
+              clients: clientSearchState.foundClients ?? [],
+              onClientSelected: _onClientSelected,
+              onSearchComplete: _onSearchComplete,
+            )
+          else if (clientSearchState.foundClients != null && clientSearchState.foundClients!.isNotEmpty)
+            _buildFoundClientsList(clientSearchState.foundClients!)
+          else
+            ElevatedButton.icon(
+              onPressed: clientSearchState.isSearching ? null : _startClientSearch,
+              icon: const Icon(Icons.radar),
+              label: const Text('🎯 Trouver des clients'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryGreen,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+        ],
+      ),
+    ).animate().slideY(
+      begin: 0.2,
+      duration: 900.ms,
+      curve: Curves.easeOut,
+    );
+  }
+
+  Widget _buildFoundClientsList(List<Client> clients) {
+    return Column(
+      children: [
+        Text(
+          '${clients.length} client${clients.length > 1 ? 's' : ''} trouvé${clients.length > 1 ? 's' : ''}',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ...clients.map((client) => _buildClientCard(client)).toList(),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: _startClientSearch,
+          icon: const Icon(Icons.refresh),
+          label: const Text('Nouvelle recherche'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.primaryGreen,
+            side: const BorderSide(color: AppColors.primaryGreen),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildClientCard(Client client) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLight,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.primaryGreen.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Avatar
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.primaryGreen.withOpacity(0.1),
+              border: Border.all(
+                color: AppColors.primaryGreen,
+                width: 2,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                client.name.isNotEmpty ? client.name[0].toUpperCase() : '?',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryGreen,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  client.name,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                Text(
+                  client.interest,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      size: 12,
+                      color: AppColors.primaryGreen,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      client.location,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () => _onClientSelected(client),
+            icon: const Icon(
+              Icons.chat_bubble_outline,
+              color: AppColors.primaryGreen,
+            ),
+            tooltip: 'Contacter',
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCreateProfileState() {
     return Center(
       child: Column(
@@ -744,6 +948,61 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
             child: const Text('Supprimer'),
           ),
         ],
+      ),
+    );
+  }
+
+  // Méthodes pour la recherche de clients
+  void _startClientSearch() {
+    ref.read(clientSearchProvider.notifier).searchNearbyClients();
+  }
+
+  void _onClientSelected(Client client) {
+    showDialog(
+      context: context,
+      builder: (context) => ClientSelectionModal(
+        client: client,
+        onAccept: () => _acceptClient(client),
+        onReject: () => _rejectClient(),
+      ),
+    );
+  }
+
+  void _onSearchComplete() {
+    // L'animation est terminée, on peut afficher les résultats
+  }
+
+  void _acceptClient(Client client) {
+    // Créer une conversation avec le client
+    final clientService = ref.read(clientServiceProvider);
+    final conversation = clientService.createConversation(client);
+    
+    // Ajouter la conversation à l'état
+    ref.read(conversationsProvider.notifier).addConversation(conversation);
+    
+    // Naviguer vers la page de chat
+    context.push('/chat/${conversation.id}');
+    
+    // Afficher un toast de succès
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Conversation démarrée avec ${client.name}'),
+        backgroundColor: AppColors.statusHealthy,
+        action: SnackBarAction(
+          label: 'Voir',
+          textColor: Colors.white,
+          onPressed: () => context.push('/chat/${conversation.id}'),
+        ),
+      ),
+    );
+  }
+
+  void _rejectClient() {
+    // Afficher un toast de refus
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Client refusé. Vous pouvez relancer une recherche.'),
+        backgroundColor: AppColors.statusWarning,
       ),
     );
   }

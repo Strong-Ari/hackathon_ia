@@ -13,6 +13,7 @@ import '../../ui/pages/sentinel_page.dart';
 import '../../ui/pages/history_page.dart';
 import '../../ui/pages/producer_dashboard_page.dart';
 import '../../ui/pages/producer_profile_page.dart';
+import '../../ui/pages/chat_page.dart';
 import '../../ui/pages/pdf_report_page.dart';
 import '../../ui/pages/notification_test_page.dart';
 import '../models/plant_diagnosis.dart';
@@ -32,6 +33,7 @@ class AppRoutes {
   // Producer routes
   static const String producerDashboard = '/producer/dashboard';
   static const String producerProfile = '/producer-profile';
+  static const String chat = '/chat/:conversationId';
   static const String pdfReport = '/pdf-report';
 
   // Test routes
@@ -271,6 +273,30 @@ final routerProvider = Provider<GoRouter>((ref) {
             );
           },
         ),
+      ),
+
+      // Chat Page
+      GoRoute(
+        path: AppRoutes.chat,
+        name: 'chat',
+        pageBuilder: (context, state) {
+          final conversationId = state.pathParameters['conversationId'] ?? '';
+          return CustomTransitionPage<void>(
+            key: state.pageKey,
+            child: ChatPage(conversationId: conversationId),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return SlideTransition(
+                position: animation.drive(
+                  Tween(
+                    begin: const Offset(1.0, 0.0),
+                    end: Offset.zero,
+                  ).chain(CurveTween(curve: Curves.easeInOut)),
+                ),
+                child: child,
+              );
+            },
+          );
+        },
       ),
 
       // PDF Report
