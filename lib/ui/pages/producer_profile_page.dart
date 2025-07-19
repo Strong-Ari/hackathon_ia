@@ -12,6 +12,8 @@ import '../widgets/profile_photo_widget.dart';
 import '../widgets/production_card_widget.dart';
 import '../widgets/production_form_dialog.dart';
 import '../widgets/client_finder_animation.dart';
+import '../widgets/client_match_modal.dart';
+import '../widgets/client_chat_interface.dart';
 
 class ProducerProfilePage extends ConsumerStatefulWidget {
   const ProducerProfilePage({super.key});
