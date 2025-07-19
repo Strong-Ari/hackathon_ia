@@ -1,8 +1,14 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ClientFinderAnimation extends StatefulWidget {
+import '../../core/models/chat_models.dart';
+import '../../core/providers/chat_provider.dart';
+import 'client_confirmation_modal.dart';
+import 'chat_interface.dart';
+
+class ClientFinderAnimation extends ConsumerStatefulWidget {
   final VoidCallback? onAnimationComplete;
 
   const ClientFinderAnimation({super.key, this.onAnimationComplete});
@@ -11,7 +17,7 @@ class ClientFinderAnimation extends StatefulWidget {
   State<ClientFinderAnimation> createState() => _ClientFinderAnimationState();
 }
 
-class _ClientFinderAnimationState extends State<ClientFinderAnimation>
+class _ClientFinderAnimationState extends ConsumerState<ClientFinderAnimation>
     with TickerProviderStateMixin {
   late AnimationController _radarController;
   late AnimationController _pulseController;
@@ -111,10 +117,10 @@ class _ClientFinderAnimationState extends State<ClientFinderAnimation>
       // Démarrer l'animation de pulsation du client trouvé
       _pulseController.repeat(reverse: true);
 
-      // Arrêter l'animation après 3 secondes et notifier
+      // Arrêter l'animation après 3 secondes et afficher la modal de confirmation
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) {
-          widget.onAnimationComplete?.call();
+          _showConfirmationModal();
         }
       });
     }
@@ -129,6 +135,80 @@ class _ClientFinderAnimationState extends State<ClientFinderAnimation>
     _radarController.reset();
     _pulseController.reset();
     _mapController.reset();
+  }
+
+  void _showConfirmationModal() {
+    if (_matchedClient == null) return;
+
+    // Convertir MockClient en ChatClient
+    final chatClient = ChatClient(
+      id: _matchedClient!.name.toLowerCase().replaceAll(' ', '_'),
+      name: _matchedClient!.name,
+      avatar: _matchedClient!.avatar,
+      interest: _matchedClient!.interest,
+      distance: _matchedClient!.distance,
+    );
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ClientConfirmationModal(
+        client: chatClient,
+        onAccept: () => _acceptClient(chatClient),
+        onDecline: _declineClient,
+      ),
+    );
+  }
+
+  void _acceptClient(ChatClient client) {
+    // Créer une nouvelle conversation
+    ref.read(chatProvider.notifier).createConversation(client);
+    
+    // Obtenir la conversation créée
+    final conversations = ref.read(chatProvider);
+    final conversation = conversations.firstWhere((c) => c.client.id == client.id);
+    
+    // Naviguer vers l'interface de chat
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ChatInterface(conversation: conversation),
+      ),
+    );
+    
+    // Notifier que l'animation est terminée
+    widget.onAnimationComplete?.call();
+  }
+
+  void _declineClient() {
+    // Afficher un toast de refus
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Row(
+          children: [
+            Icon(Icons.close, color: Colors.white),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Client refusé. Vous pouvez relancer une recherche.',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.orange,
+        duration: const Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
+    
+    // Réinitialiser l'animation
+    _resetAnimation();
+    
+    // Notifier que l'animation est terminée
+    widget.onAnimationComplete?.call();
   }
 
   @override

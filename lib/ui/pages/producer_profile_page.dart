@@ -12,6 +12,7 @@ import '../widgets/profile_photo_widget.dart';
 import '../widgets/production_card_widget.dart';
 import '../widgets/production_form_dialog.dart';
 import '../widgets/client_finder_animation.dart';
+import 'conversations_list_page.dart';
 
 class ProducerProfilePage extends ConsumerStatefulWidget {
   const ProducerProfilePage({super.key});
@@ -90,12 +91,22 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
           onPressed: () => context.pop(),
         ),
         actions: [
-          if (!_isEditing)
+          if (!_isEditing) ...[
+            IconButton(
+              icon: const Icon(Icons.chat),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ConversationsListPage(),
+                ),
+              ),
+              tooltip: 'Mes conversations',
+            ),
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () => _toggleEditMode(profileAsync.value),
               tooltip: 'Modifier le profil',
             ),
+          ],
           if (_isEditing) ...[
             IconButton(
               icon: const Icon(Icons.close),
@@ -701,30 +712,8 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
       padding: const EdgeInsets.only(top: 20),
       child: ClientFinderAnimation(
         onAnimationComplete: () {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Row(
-                  children: [
-                    Icon(Icons.check_circle, color: Colors.white),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Félicitations ! Un client potentiel s\'intéresse à vos produits.',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: const Color(0xFF4CAF50),
-                duration: const Duration(seconds: 4),
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            );
-          }
+          // L'animation est maintenant gérée par le widget ClientFinderAnimation
+          // La modal de confirmation et la navigation vers le chat sont gérées automatiquement
         },
       ),
     );
