@@ -155,20 +155,20 @@ class _ConsumerHomePageState extends State<ConsumerHomePage>
                 ),
               ),
             ),
-            leading: IconButton(
-              icon: const Icon(PhosphorIcons.arrowLeft, color: AppColors.textOnDark),
-              onPressed: () => context.go(AppRoutes.home),
+                      leading: IconButton(
+            icon: const Icon(PhosphorIcons.arrowLeft(), color: AppColors.textOnDark),
+            onPressed: () => context.go(AppRoutes.home),
+          ),
+          actions: [
+            IconButton(
+              icon: const Icon(PhosphorIcons.shoppingCart(), color: AppColors.textOnDark),
+              onPressed: () => _showCart(),
             ),
-            actions: [
-              IconButton(
-                icon: const Icon(PhosphorIcons.shoppingCart, color: AppColors.textOnDark),
-                onPressed: () => _showCart(),
-              ),
-              IconButton(
-                icon: const Icon(PhosphorIcons.user, color: AppColors.textOnDark),
-                onPressed: () => _showProfile(),
-              ),
-            ],
+            IconButton(
+              icon: const Icon(PhosphorIcons.user(), color: AppColors.textOnDark),
+              onPressed: () => _showProfile(),
+            ),
+          ],
           ),
 
           // Contenu principal
@@ -237,10 +237,10 @@ class _ConsumerHomePageState extends State<ConsumerHomePage>
       ),
       child: Row(
         children: [
-          const Icon(
-            PhosphorIcons.magnifyingGlass,
-            color: AppColors.textSecondary,
-          ),
+                  const Icon(
+          PhosphorIcons.magnifyingGlass(),
+          color: AppColors.textSecondary,
+        ),
           const SizedBox(width: AppDimensions.spaceMD),
           Expanded(
             child: TextField(
@@ -262,11 +262,11 @@ class _ConsumerHomePageState extends State<ConsumerHomePage>
               color: AppColors.accentGold,
               borderRadius: BorderRadius.circular(AppDimensions.radiusMD),
             ),
-            child: const Icon(
-              PhosphorIcons.sliders,
-              color: AppColors.textOnDark,
-              size: 20,
-            ),
+                      child: const Icon(
+            PhosphorIcons.sliders(),
+            color: AppColors.textOnDark,
+            size: 20,
+          ),
           ),
         ],
       ),
@@ -368,11 +368,11 @@ class _ConsumerHomePageState extends State<ConsumerHomePage>
                   color: AppColors.primaryGreen,
                   borderRadius: BorderRadius.circular(AppDimensions.radiusMD),
                 ),
-                child: const Icon(
-                  PhosphorIcons.shield,
-                  color: AppColors.textOnDark,
-                  size: 20,
-                ),
+                              child: const Icon(
+                PhosphorIcons.shield(),
+                color: AppColors.textOnDark,
+                size: 20,
+              ),
               ),
               const SizedBox(width: AppDimensions.spaceMD),
               Expanded(
@@ -402,9 +402,9 @@ class _ConsumerHomePageState extends State<ConsumerHomePage>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatItem('98%', 'Qualité', PhosphorIcons.star),
-              _buildStatItem('24h', 'Fraîcheur', PhosphorIcons.clock),
-              _buildStatItem('Local', 'Origine', PhosphorIcons.mapPin),
+                          _buildStatItem('98%', 'Qualité', PhosphorIcons.star()),
+            _buildStatItem('24h', 'Fraîcheur', PhosphorIcons.clock()),
+            _buildStatItem('Local', 'Origine', PhosphorIcons.mapPin()),
             ],
           ),
         ],
@@ -548,11 +548,11 @@ class _ConsumerHomePageState extends State<ConsumerHomePage>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
-                              PhosphorIcons.shield,
-                              size: 12,
-                              color: AppColors.primaryGreen,
-                            ),
+                                                    const Icon(
+                          PhosphorIcons.shield(),
+                          size: 12,
+                          color: AppColors.primaryGreen,
+                        ),
                             const SizedBox(width: AppDimensions.spaceXS),
                             Text(
                               product['certification'],

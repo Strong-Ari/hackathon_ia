@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage>
             ],
           ),
           child: const Icon(
-            PhosphorIcons.leaf,
+            PhosphorIcons.leaf(),
             size: 40,
             color: AppColors.textOnDark,
           ),
@@ -202,7 +202,7 @@ class _HomePageState extends State<HomePage>
               child: _buildUserTypeCard(
                 title: 'Espace Producteur',
                 subtitle: 'Surveillez vos cultures avec l\'IA',
-                icon: PhosphorIcons.plant,
+                icon: PhosphorIcons.plant(),
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage>
               child: _buildUserTypeCard(
                 title: 'Espace Consommateur',
                 subtitle: 'Découvrez des produits de qualité',
-                icon: PhosphorIcons.shoppingCart,
+                icon: PhosphorIcons.shoppingCart(),
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -337,7 +337,7 @@ class _HomePageState extends State<HomePage>
                         borderRadius: BorderRadius.circular(AppDimensions.radiusMD),
                       ),
                       child: const Icon(
-                        PhosphorIcons.arrowRight,
+                        PhosphorIcons.arrowRight(),
                         color: AppColors.textOnDark,
                         size: 20,
                       ),

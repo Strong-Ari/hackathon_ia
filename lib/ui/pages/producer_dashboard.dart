@@ -121,12 +121,12 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
             ),
           ),
           leading: IconButton(
-            icon: const Icon(PhosphorIcons.arrowLeft, color: AppColors.textOnDark),
+            icon: const Icon(PhosphorIcons.arrowLeft(), color: AppColors.textOnDark),
             onPressed: () => context.go(AppRoutes.home),
           ),
           actions: [
             IconButton(
-              icon: const Icon(PhosphorIcons.bell, color: AppColors.textOnDark),
+              icon: const Icon(PhosphorIcons.bell(), color: AppColors.textOnDark),
               onPressed: () => _showNotifications(),
             ),
           ],
@@ -209,28 +209,28 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
       {
         'title': 'Température',
         'value': '${_farmData['temperature']}°C',
-        'icon': PhosphorIcons.thermometer,
+        'icon': PhosphorIcons.thermometer(),
         'color': AppColors.statusWarning,
         'trend': '+2.1°',
       },
       {
         'title': 'Humidité',
         'value': '${_farmData['humidity']}%',
-        'icon': PhosphorIcons.drop,
+        'icon': PhosphorIcons.drop(),
         'color': AppColors.primaryGreen,
         'trend': '-3%',
       },
       {
         'title': 'Sol',
         'value': '${_farmData['soilMoisture']}%',
-        'icon': PhosphorIcons.plant,
+        'icon': PhosphorIcons.plant(),
         'color': AppColors.accentGold,
         'trend': 'Optimal',
       },
       {
         'title': 'Capteurs',
         'value': '${_farmData['sensorsConnected']}/${_farmData['totalSensors']}',
-        'icon': PhosphorIcons.cpu,
+        'icon': PhosphorIcons.cpu(),
         'color': AppColors.statusHealthy,
         'trend': 'Actifs',
       },
@@ -460,14 +460,14 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
       {
         'title': 'Scanner IA',
         'subtitle': 'Analyser une plante',
-        'icon': PhosphorIcons.camera,
+        'icon': PhosphorIcons.camera(),
         'color': AppColors.scannerFrame,
         'onTap': () => setState(() => _selectedIndex = 1),
       },
       {
         'title': 'Générer Rapport',
         'subtitle': 'PDF automatique',
-        'icon': PhosphorIcons.filePdf,
+        'icon': PhosphorIcons.filePdf(),
         'color': AppColors.statusDanger,
         'onTap': () => setState(() => _selectedIndex = 2),
       },
@@ -580,11 +580,11 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
               color: AppColors.primaryGreen.withOpacity(0.1),
               borderRadius: BorderRadius.circular(AppDimensions.radiusMD),
             ),
-            child: const Icon(
-              PhosphorIcons.leaf,
-              color: AppColors.primaryGreen,
-              size: AppDimensions.iconLG,
-            ),
+                      child: const Icon(
+            PhosphorIcons.leaf(),
+            color: AppColors.primaryGreen,
+            size: AppDimensions.iconLG,
+          ),
           ),
           const SizedBox(width: AppDimensions.spaceMD),
           Expanded(
@@ -613,10 +613,10 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
               ],
             ),
           ),
-          const Icon(
-            PhosphorIcons.arrowRight,
-            color: AppColors.textSecondary,
-          ),
+                  const Icon(
+          PhosphorIcons.arrowRight(),
+          color: AppColors.textSecondary,
+        ),
         ],
       ),
     );
@@ -628,11 +628,11 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            PhosphorIcons.camera,
-            size: 80,
-            color: AppColors.scannerFrame,
-          ),
+                  const Icon(
+          PhosphorIcons.camera(),
+          size: 80,
+          color: AppColors.scannerFrame,
+        ),
           const SizedBox(height: AppDimensions.spaceXL),
           Text(
             'Scanner IA des Plantes',
@@ -656,7 +656,7 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
             onPressed: () {
               // TODO: Ouvrir la caméra
             },
-            icon: const Icon(PhosphorIcons.camera),
+            icon: const Icon(PhosphorIcons.camera()),
             label: const Text('Ouvrir Caméra'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.scannerFrame,
@@ -675,11 +675,11 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            PhosphorIcons.filePdf,
-            size: 80,
-            color: AppColors.statusDanger,
-          ),
+                  const Icon(
+          PhosphorIcons.filePdf(),
+          size: 80,
+          color: AppColors.statusDanger,
+        ),
           const SizedBox(height: AppDimensions.spaceXL),
           Text(
             'Rapports PDF',
@@ -703,7 +703,7 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
             onPressed: () {
               // TODO: Générer le PDF
             },
-            icon: const Icon(PhosphorIcons.filePdf),
+            icon: const Icon(PhosphorIcons.filePdf()),
             label: const Text('Générer Rapport'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.statusDanger,
@@ -738,15 +738,15 @@ class _ProducerDashboardPageState extends State<ProducerDashboardPage>
         unselectedItemColor: AppColors.textSecondary,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.house),
+            icon: Icon(PhosphorIcons.house()),
             label: 'Dashboard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.camera),
+            icon: Icon(PhosphorIcons.camera()),
             label: 'Scanner',
           ),
           BottomNavigationBarItem(
-            icon: Icon(PhosphorIcons.filePdf),
+            icon: Icon(PhosphorIcons.filePdf()),
             label: 'Rapports',
           ),
         ],

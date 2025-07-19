@@ -216,13 +216,13 @@ class _MetricCardState extends State<MetricCard>
     
     if (isNeutral) {
       trendColor = AppColors.statusHealthy;
-      trendIcon = PhosphorIcons.checkCircle;
+      trendIcon = PhosphorIcons.checkCircle();
     } else if (isPositive) {
       trendColor = AppColors.statusHealthy;
-      trendIcon = PhosphorIcons.trendUp;
+      trendIcon = PhosphorIcons.trendUp();
     } else {
       trendColor = AppColors.statusWarning;
-      trendIcon = PhosphorIcons.trendDown;
+      trendIcon = PhosphorIcons.trendDown();
     }
 
     return Container(
