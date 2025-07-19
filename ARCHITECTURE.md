@@ -1,339 +1,283 @@
-# 🏗️ Guide d'Architecture - AgriShield AI
+# 🏗️ Architecture AgriShield AI
 
 ## Vue d'ensemble
 
-AgriShield AI suit une architecture **Clean Architecture** avec **Feature-First** pour maintenir la séparation des préoccupations et faciliter la maintenance.
+AgriShield AI suit une architecture **modulaire et scalable** basée sur les meilleures pratiques Flutter avec une séparation claire des responsabilités.
 
-## 📁 Structure des dossiers
+## 📁 Structure du Projet
 
 ```
 lib/
-├── main.dart                           # Point d'entrée de l'application
-├── core/                              # Couche de base (shared)
-│   ├── constants/                     # Constantes globales
-│   │   ├── app_colors.dart           # Palette de couleurs
-│   │   └── app_dimensions.dart       # Dimensions et espacements
-│   ├── models/                       # Modèles de données
-│   │   └── plant_diagnosis.dart      # Modèle de diagnostic
-│   ├── providers/                    # Providers Riverpod globaux
-│   │   └── router_provider.dart      # Configuration navigation
-│   └── services/                     # Services (à implémenter)
-│       ├── ai_service.dart          # Service IA
-│       ├── camera_service.dart      # Service caméra
-│       └── storage_service.dart     # Service stockage
-└── ui/                               # Couche présentation
-    ├── pages/                        # Écrans de l'application
-    │   ├── splash_page.dart         # Écran de démarrage
-    │   ├── home_page.dart           # Écran d'accueil
-    │   ├── scan_page.dart           # Scanner IA
-    │   ├── diagnosis_page.dart      # Résultats diagnostic
-    │   ├── actions_page.dart        # Recommandations IA
-    │   ├── report_page.dart         # Génération rapport
-    │   ├── map_page.dart            # Carte communautaire
-    │   ├── sentinel_page.dart       # Mode surveillance
-    │   └── history_page.dart        # Historique
-    ├── widgets/                      # Composants réutilisables
-    │   └── agri_button.dart         # Bouton personnalisé
-    └── theme/                        # Configuration thème
-        └── app_theme.dart           # Thème Material 3
+├── main.dart                       # Point d'entrée de l'application
+├── core/                          # Logique métier et utilitaires
+│   ├── constants/                 # Constantes de l'application
+│   │   ├── app_colors.dart       # Palette de couleurs
+│   │   ├── app_dimensions.dart   # Espacements et dimensions
+│   │   └── app_constants.dart    # Textes et configurations
+│   ├── models/                   # Modèles de données
+│   │   └── plant_diagnosis.dart  # Modèle de diagnostic IA
+│   └── providers/               # Gestion d'état et navigation
+│       └── router_provider.dart # Configuration GoRouter
+├── ui/                          # Interface utilisateur
+│   ├── pages/                   # Écrans de l'application
+│   │   ├── splash_page.dart     # Écran de démarrage animé
+│   │   ├── home_page.dart       # Sélection d'espace utilisateur
+│   │   ├── producer_dashboard.dart # Tableau de bord producteur
+│   │   ├── consumer_home.dart   # Marketplace consommateur
+│   │   ├── scan_page.dart       # Interface scanner IA
+│   │   ├── diagnosis_page.dart  # Résultats de diagnostic
+│   │   ├── actions_page.dart    # Recommandations IA
+│   │   ├── report_page.dart     # Génération de rapports
+│   │   ├── map_page.dart        # Carte communautaire
+│   │   ├── sentinel_page.dart   # Mode surveillance
+│   │   └── history_page.dart    # Historique des analyses
+│   ├── widgets/                 # Composants réutilisables
+│   │   ├── agri_button.dart     # Bouton personnalisé animé
+│   │   └── metric_card.dart     # Carte de métrique avec animations
+│   └── theme/                   # Design system
+│       └── app_theme.dart       # Thème Material 3 personnalisé
+└── assets/                      # Ressources statiques (si nécessaire)
 ```
 
-## 🔄 Flow de données
+## 🎯 Principes Architecturaux
 
-### Pattern utilisé : **Riverpod + MVVM**
+### 1. **Separation of Concerns**
+- **Core** : Logique métier, modèles, constantes
+- **UI** : Interface utilisateur et interactions
+- **Providers** : Gestion d'état et navigation
 
+### 2. **Composition over Inheritance**
+- Widgets composés de petits composants réutilisables
+- Mixins pour les animations répétitives
+- Extensions pour enrichir les types existants
+
+### 3. **Reactive Programming**
+- Riverpod pour la gestion d'état réactive
+- AnimationController pour les animations fluides
+- Stream-based pour les données temps réel (futures)
+
+## 🔧 Technologies et Patterns
+
+### Framework et Packages
+```yaml
+# Core Framework
+flutter: ^3.8.0
+flutter_riverpod: ^2.5.1  # State management
+
+# Navigation
+go_router: ^16.0.0         # Declarative routing
+
+# UI & Animations
+flutter_animate: ^4.5.0    # Advanced animations
+google_fonts: ^6.2.1       # Typography
+phosphor_flutter: ^2.1.0   # Modern icons
+
+# Device Integration
+camera: ^0.11.2            # Camera access
+google_maps_flutter: ^2.6.1 # Maps integration
+pdf: ^3.10.8               # PDF generation
 ```
-UI (View) ↔ Controller (Provider) ↔ Service ↔ Data Source
-```
 
-1. **UI (Pages/Widgets)** : Présentation pure, réactive aux changements d'état
-2. **Controllers (Providers)** : Logique métier, gestion d'état
-3. **Services** : Couche d'abstraction pour les APIs et fonctionnalités
-4. **Data Sources** : Accès aux données (API, base locale, caméra, etc.)
+### Design Patterns Utilisés
 
-### Exemple de flow pour le scanner
+#### 1. **Provider Pattern** (Riverpod)
 ```dart
-ScanPage → scanProvider → CameraService → AI Analysis → DiagnosisModel
-```
-
-## 🎨 Gestion du thème
-
-### Material 3 avec personnalisation
-
-Le thème suit une approche **design tokens** pour la cohérence :
-
-```dart
-// Couleurs sémantiques
-primary: AppColors.primaryGreen        // Actions principales
-secondary: AppColors.accentGold        // Actions secondaires
-surface: AppColors.surfaceLight        // Arrière-plans
-error: AppColors.statusDanger          // États d'erreur
-
-// Mapping contextuel
-healthy → statusHealthy                // Plante saine
-warning → statusWarning                // Attention requise
-danger → statusDanger                  // Action urgente
-```
-
-### Responsive design
-- **Breakpoints** : Mobile-first (< 480px)
-- **Dimensions** : Utilisation d'`AppDimensions` pour la cohérence
-- **Densité** : Adaptation automatique selon l'écran
-
-## 🧭 Navigation et routing
-
-### go_router avec transitions custom
-
-```dart
-// Configuration centralisée dans router_provider.dart
-final routerProvider = Provider<GoRouter>((ref) {
-  return GoRouter(
-    routes: [
-      // Routes avec transitions personnalisées
-      GoRoute(
-        path: '/scan',
-        pageBuilder: (context, state) => CustomTransitionPage(
-          child: ScanPage(),
-          transitionsBuilder: slideUpTransition,
-        ),
-      ),
-    ],
-  );
+// Exemple de provider pour l'état global
+final farmDataProvider = StateNotifierProvider<FarmDataNotifier, FarmData>((ref) {
+  return FarmDataNotifier();
 });
 ```
 
-### Types de transitions
-
-| Transition | Usage | Animation |
-|------------|-------|-----------|
-| **Fade** | Splash → Home | Fondu simple |
-| **Slide** | Navigation principale | Glissement |
-| **Hero** | Scanner button | Transformation continue |
-| **Scale** | Modal/Popup | Zoom depuis le centre |
-
-## 🎭 Animations et micro-interactions
-
-### Librairies utilisées
-- **flutter_animate** : Animations déclaratives
-- **AnimationController** : Animations custom complexes
-- **Hero** : Transitions d'éléments partagés
-
-### Pattern d'animation
+#### 2. **Repository Pattern** (Future)
 ```dart
-class AnimatedPage extends StatefulWidget {
-  @override
-  _AnimatedPageState createState() => _AnimatedPageState();
-}
-
-class _AnimatedPageState extends State<AnimatedPage>
-    with TickerProviderStateMixin {
-
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: Duration(milliseconds: 600),
-      vsync: this,
-    );
-    _startAnimation();
-  }
-
-  void _startAnimation() async {
-    await Future.delayed(Duration(milliseconds: 200));
-    _controller.forward();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget
-        .animate(controller: _controller)
-        .fadeIn(duration: 600.ms)
-        .slideY(begin: 0.3, end: 0.0);
-  }
+// Interface pour l'accès aux données
+abstract class PlantDiagnosisRepository {
+  Future<PlantDiagnosis> scanPlant(File image);
+  Future<List<PlantDiagnosis>> getHistory();
 }
 ```
 
-## 🔧 Gestion d'état avec Riverpod
-
-### Types de providers
-
+#### 3. **Builder Pattern** (Widgets)
 ```dart
-// Provider simple (données immutables)
-final configProvider = Provider<AppConfig>((ref) {
-  return AppConfig();
-});
-
-// StateProvider (état mutable simple)
-final scanningStateProvider = StateProvider<bool>((ref) => false);
-
-// NotifierProvider (logique complexe)
-final diagnosisProvider = NotifierProvider<DiagnosisNotifier, List<PlantDiagnosis>>(() {
-  return DiagnosisNotifier();
-});
-
-// AsyncNotifierProvider (données asynchrones)
-final plantAnalysisProvider = AsyncNotifierProvider<PlantAnalysisNotifier, PlantDiagnosis?>(() {
-  return PlantAnalysisNotifier();
-});
+// Construction flexible des cartes de métriques
+MetricCard.builder()
+  .title('Température')
+  .value('24.5°C')
+  .icon(PhosphorIcons.thermometer)
+  .trend('+2.1°')
+  .build();
 ```
 
-### Bonnes pratiques Riverpod
+## 🎨 Design System
 
-1. **Granularité** : Un provider par responsabilité
-2. **Naming** : Suffixe Provider pour la clarté
-3. **Composition** : Combinaison de providers simples
-4. **Testing** : Override facile pour les tests
+### Thème Material 3
+- **ColorScheme** : Générée à partir de `seedColor`
+- **Typography** : Poppins avec hiérarchie claire
+- **Components** : Boutons, cartes, inputs personnalisés
 
-## 📱 Patterns UI
+### Animations
+- **Flutter Animate** : Transitions et micro-interactions
+- **CustomPainter** : Gauges circulaires et graphiques
+- **Hero Animations** : Transitions entre écrans
 
-### Composants réutilisables
+### Responsive Design
+- **Breakpoints** : Mobile-first avec adaptation tablette
+- **SafeArea** : Gestion des encoches et barres système
+- **MediaQuery** : Adaptation aux différentes tailles d'écran
 
-Tous les composants suivent le pattern **Configuration over Convention** :
+## 📱 Flow de Navigation
 
+### Navigation Déclarative (GoRouter)
 ```dart
-// Exemple : AgriButton
-AgriButton(
-  text: 'Scanner une plante',
-  type: AgriButtonType.scanner,     // Définit l'apparence
-  size: AgriButtonSize.large,       // Définit les dimensions
-  enableGlow: true,                 // Active l'effet glow
-  enablePulse: true,                // Active l'animation pulse
-  heroTag: 'scanner_button',        // Pour les Hero transitions
-  onPressed: () => context.push('/scan'),
+// Configuration des routes avec transitions
+GoRoute(
+  path: '/producer',
+  pageBuilder: (context, state) => CustomTransitionPage(
+    child: ProducerDashboardPage(),
+    transitionsBuilder: slideTransition,
+  ),
 )
 ```
 
-### Page structure standard
-
-```dart
-class StandardPage extends StatefulWidget {
-  @override
-  _StandardPageState createState() => _StandardPageState();
-}
-
-class _StandardPageState extends State<StandardPage>
-    with TickerProviderStateMixin {
-
-  // 1. Animation controllers
-  late AnimationController _contentController;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeControllers();
-    _startAnimations();
-  }
-
-  // 2. Structure du build
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: _buildBackground(),
-        child: SafeArea(
-          child: Column(
-            children: [
-              _buildHeader(),      // En-tête avec navigation
-              _buildContent(),     // Contenu principal animé
-              _buildActions(),     // Actions utilisateur
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // 3. Méthodes de construction spécialisées
-  Widget _buildHeader() => ...;
-  Widget _buildContent() => ...;
-  Widget _buildActions() => ...;
-}
+### Hiérarchie des Écrans
+```
+Splash (/) 
+  └── Home (/home)
+      ├── Producer Dashboard (/producer)
+      │   ├── Scanner (tab)
+      │   ├── Reports (tab)
+      │   └── Settings (future)
+      └── Consumer Home (/consumer)
+          ├── Products List
+          ├── Product Detail (future)
+          └── Cart (future)
 ```
 
-## ⚡ Performance et optimisation
+## 🔄 Gestion d'État
 
-### Optimisations implémentées
-
-1. **Widget rebuilds** : Utilisation de `AnimatedBuilder` pour les animations
-2. **Memory management** : Disposal automatique des controllers
-3. **Lazy loading** : Chargement à la demande des pages
-4. **Image optimization** : Compression et mise en cache
-
-### Métriques surveillées
-- **Frame rate** : 60 FPS constant
-- **Memory usage** : < 100MB en utilisation normale
-- **Battery impact** : Minimal grâce aux animations optimisées
-
-## 🧪 Testing strategy
-
-### Types de tests
+### Architecture Riverpod
 ```dart
-// Widget tests
-testWidgets('AgriButton should show loading state', (tester) async {
-  await tester.pumpWidget(
-    AgriButton(
-      text: 'Test',
-      isLoading: true,
-    ),
-  );
+// État local des composants
+class _DashboardPageState extends State<DashboardPage> {
+  // AnimationControllers et état UI local
+}
 
-  expect(find.byType(CircularProgressIndicator), findsOneWidget);
+// État global de l'application
+final appStateProvider = StateNotifierProvider<AppStateNotifier, AppState>((ref) {
+  return AppStateNotifier();
 });
 
-// Provider tests
-void main() {
-  test('DiagnosisNotifier should add new diagnosis', () {
-    final container = ProviderContainer();
-    final notifier = container.read(diagnosisProvider.notifier);
+// État dérivé et calculé
+final healthPercentageProvider = Provider<double>((ref) {
+  final farmData = ref.watch(farmDataProvider);
+  return calculateHealthPercentage(farmData);
+});
+```
 
-    notifier.addDiagnosis(mockDiagnosis);
+## 🎭 Système d'Animation
 
-    expect(container.read(diagnosisProvider), contains(mockDiagnosis));
-  });
+### Types d'Animations
+1. **Entrance** : Fade + Scale + Slide
+2. **Transition** : Hero + Custom transitions
+3. **Micro-interactions** : Hover, tap, loading states
+4. **Background** : Particules flottantes, gradients animés
+
+### Performance
+- **AnimationController** : Réutilisation et disposal correct
+- **Intervals** : Animations séquentielles optimisées
+- **Curves** : Easing naturel pour un feeling premium
+
+## 🔮 Extensibilité Future
+
+### Architecture Prête pour
+1. **Backend Integration**
+   ```dart
+   // Service abstrait pour API calls
+   abstract class ApiService {
+     Future<T> get<T>(String endpoint);
+     Future<T> post<T>(String endpoint, Map<String, dynamic> data);
+   }
+   ```
+
+2. **Offline-First**
+   ```dart
+   // Repository avec cache local
+   class CachedPlantDiagnosisRepository implements PlantDiagnosisRepository {
+     final LocalDatabase _db;
+     final ApiService _api;
+   }
+   ```
+
+3. **Internationalization**
+   ```dart
+   // Structure prête pour l10n
+   class AppLocalizations {
+     static String of(BuildContext context, String key) => 
+       _localizedValues[Localizations.localeOf(context)]![key]!;
+   }
+   ```
+
+4. **Testing**
+   ```dart
+   // Structure testable avec injection de dépendances
+   void main() {
+     testWidgets('Dashboard displays metrics correctly', (tester) async {
+       await tester.pumpWidget(
+         ProviderScope(
+           overrides: [
+             farmDataProvider.overrideWith(() => MockFarmDataNotifier()),
+           ],
+           child: MaterialApp(home: ProducerDashboardPage()),
+         ),
+       );
+     });
+   }
+   ```
+
+## 📊 Métriques et Performance
+
+### Optimisations Appliquées
+- **const constructors** : Réduction des rebuilds
+- **AnimatedBuilder** : Rebuilds ciblés
+- **RepaintBoundary** : Isolation des repaints coûteux
+- **Image caching** : Optimisation des assets
+
+### Monitoring (Future)
+- **Firebase Crashlytics** : Crash reporting
+- **Firebase Performance** : Métriques de performance
+- **Custom analytics** : Usage tracking
+
+## 🔐 Sécurité et Qualité
+
+### Standards de Code
+- **Flutter Lints** : Règles strictes de qualité
+- **Dart Format** : Formatage automatique
+- **Documentation** : Dartdoc pour toutes les API publiques
+
+### Sécurité
+- **Permissions** : Demande explicite et justifiée
+- **Data validation** : Validation côté client et serveur
+- **Secure storage** : Chiffrement des données sensibles
+
+## 🚀 Déploiement
+
+### Build Configuration
+```yaml
+# android/app/build.gradle
+buildTypes {
+    release {
+        signingConfig signingConfigs.release
+        minifyEnabled true
+        proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+    }
 }
 ```
 
-## 🔮 Extensions futures
-
-### Architecture modulaire préparée
-
-L'architecture actuelle facilite l'ajout de :
-
-1. **Modules IA** : Intégration Gemini/TensorFlow
-2. **Backend services** : Firebase/Supabase
-3. **Synchronisation** : Données multi-device
-4. **Analytics** : Tracking comportement utilisateur
-5. **Notifications** : Push notifications intelligentes
-
-### Patterns à suivre
-
-Pour ajouter une nouvelle fonctionnalité :
-
-1. **Modèle** : Créer dans `core/models/`
-2. **Service** : Implémenter dans `core/services/`
-3. **Provider** : Ajouter dans `core/providers/`
-4. **UI** : Page dans `ui/pages/` + widgets dans `ui/widgets/`
-5. **Navigation** : Route dans `router_provider.dart`
-
-## 📋 Checklist développement
-
-### Avant chaque commit
-- [ ] Tests passent (widget + unit)
-- [ ] Pas de warnings lint
-- [ ] Performance acceptable (no jank)
-- [ ] Animations fluides
-- [ ] Navigation cohérente
-- [ ] Gestion d'erreurs implémentée
-
-### Code review
-- [ ] Architecture respectée
-- [ ] Patterns suivis
-- [ ] Documentation à jour
-- [ ] Accessibilité prise en compte
-- [ ] Responsive design validé
+### CI/CD (Future)
+- **GitHub Actions** : Build automatique
+- **Firebase App Distribution** : Distribution beta
+- **Play Store** : Déploiement automatisé
 
 ---
 
-Cette architecture garantit une base solide pour l'évolution d'AgriShield AI tout en maintenant la qualité et les performances.
+**Cette architecture garantit une application maintenable, performante et évolutive pour AgriShield AI** 🌱

@@ -1,205 +1,219 @@
-# 🌱 AgriShield AI - L'IA veille sur vos cultures
+# 🌱 AgriShield AI - Application Mobile Flutter
 
-Une application mobile d'agritech intelligente pour petits agriculteurs, conçue pour fonctionner même hors ligne et offrir une expérience utilisateur exceptionnelle.
+**L'IA veille sur vos cultures** - Une application mobile complète pour l'agriculture intelligente avec IA intégrée.
 
-## 🎯 Fonctionnalités principales
+## 🎯 Vue d'ensemble
 
-### 📷 Scanner IA de maladies
-- Interface scanner type Google Lens avec animations fluides
-- Détection automatique des maladies des plantes
-- Diagnostic instantané avec score de confiance IA
-- Support hors ligne avec modèles IA intégrés
+AgriShield AI est une application Flutter moderne conçue pour révolutionner l'agriculture grâce à l'intelligence artificielle. Elle offre deux expériences distinctes :
 
-### 🔍 Diagnostic intelligent
-- Analyse détaillée des maladies détectées
-- Estimation des pertes potentielles
-- Classification par type (fongique, bactérienne, virale, etc.)
-- Niveau de gravité avec code couleur
+- **👨‍🌾 Espace Producteur** : Surveillance en temps réel, diagnostic IA, rapports automatisés
+- **🧑‍🍳 Espace Consommateur** : Découverte de produits locaux certifiés de qualité
 
-### 🤖 Recommandations IA
-- Actions personnalisées basées sur l'IA
-- Traitements recommandés avec timeline
-- Conseils de prévention
-- Estimation des coûts
+## ✨ Fonctionnalités Principales
 
-### 🗺️ Carte communautaire
-- Visualisation des alertes locales
-- Heatmap des maladies par région
-- Signalement collaboratif
-- Données en temps réel
+### 🏠 Écran d'Accueil
+- **Design ultra-moderne** avec animations fluides
+- **Choix d'espace** intuitif (Producteur/Consommateur)
+- **Fond animé** avec particules flottantes
+- **Transitions premium** entre les écrans
 
-### 🛡️ Mode Sentinelle
-- Surveillance automatique programmée
-- Alertes proactives
-- Analyse périodique
-- Notifications intelligentes
+### 👨‍🌾 Espace Producteur
 
-## 🎨 Design & UX
+#### 📊 Tableau de Bord
+- **Métriques en temps réel** : température, humidité, sol, capteurs
+- **Gauge de santé globale** avec animation circulaire personnalisée
+- **Cartes de données** avec tendances et alertes visuelles
+- **Interface responsive** optimisée pour tous les écrans
 
-### Interface utilisateur
-- **Material 3** avec personnalisation poussée
-- **Thème nature-tech** (vert, beige, doré)
-- **Animations fluides** avec flutter_animate et Lottie
-- **Responsive design** optimisé pour mobile
-- **Mode sombre et clair** automatique
+#### 📱 Scanner IA
+- **Diagnostic instantané** des maladies des plantes
+- **Interface caméra** avec overlay d'analyse
+- **Résultats en temps réel** avec recommandations
+- **Historique des scans** avec détails complets
 
-### Animations clés
-- **Splash screen** : Transformation plante → circuit IA
-- **Scanner** : Overlay animé avec particules et laser
-- **Transitions** : Hero animations entre les écrans
-- **Feedback** : Micro-interactions sur chaque action
+#### 📄 Rapports PDF
+- **Génération automatique** de rapports détaillés
+- **Métriques d'exploitation** avec graphiques
+- **Recommandations IA** formatées professionnellement
+- **Heatmap intégrée** avec Google Maps
+- **Signature numérique** avec validation IA
 
-### Accessibilité
-- **Offline-first** : Fonctionne sans connexion
-- **Contraste élevé** : Lisible en extérieur
-- **Feedback haptique** : Confirmations tactiles
-- **Navigation intuitive** : Flow logique et fluide
+### 🧑‍🍳 Espace Consommateur
 
-## 🏗️ Architecture technique
+#### 🛒 Marketplace
+- **Produits locaux certifiés** avec garantie qualité
+- **Système de notation** A+/A/B avec couleurs
+- **Recherche avancée** par catégories
+- **Certification AgriShield** pour tous les producteurs
 
-### Structure du projet
+#### 📍 Traçabilité
+- **Distance producteur** affichée en temps réel
+- **Score de fraîcheur** calculé par IA
+- **Origine locale** garantie et vérifiée
+
+## 🎨 Design System
+
+### 🎨 Couleurs
+```dart
+// Palette Nature-Tech
+- Vert Principal: #2E7D32 (Primary Green)
+- Or Accent: #FFB300 (Accent Gold)  
+- Beige Naturel: #F5F5DC (Background)
+- Statuts: Vert/Orange/Rouge pour santé des plantes
+```
+
+### 🔤 Typographie
+- **Police principale** : Poppins (Google Fonts)
+- **Hiérarchie claire** : Display/Headline/Title/Body/Label
+- **Poids variables** : 400 à 700 selon le contexte
+
+### 🎭 Animations
+- **Flutter Animate** pour les transitions fluides
+- **Animations personnalisées** avec CustomPainter
+- **Micro-interactions** sur tous les éléments tactiles
+- **Particules flottantes** en arrière-plan
+
+## 🏗️ Architecture Technique
+
+### 📁 Structure du Projet
 ```
 lib/
-├── main.dart                    # Point d'entrée
 ├── core/
-│   ├── constants/              # Couleurs, dimensions, etc.
-│   ├── models/                 # Modèles de données
-│   ├── providers/              # État global (Riverpod)
-│   └── services/               # Services (IA, API, etc.)
-└── ui/
-    ├── pages/                  # Écrans de l'application
-    ├── widgets/                # Composants réutilisables
-    └── theme/                  # Thème Material 3
+│   ├── constants/
+│   │   ├── app_colors.dart        # Palette de couleurs
+│   │   └── app_dimensions.dart    # Espacements et tailles
+│   ├── models/
+│   │   └── plant_diagnosis.dart   # Modèles de données
+│   └── providers/
+│       └── router_provider.dart   # Navigation GoRouter
+├── ui/
+│   ├── pages/
+│   │   ├── splash_page.dart       # Écran de démarrage animé
+│   │   ├── home_page.dart         # Sélection d'espace
+│   │   ├── producer_dashboard.dart # Tableau de bord producteur
+│   │   ├── consumer_home.dart     # Marketplace consommateur
+│   │   └── ...                    # Autres écrans
+│   ├── widgets/
+│   │   └── agri_button.dart       # Bouton personnalisé
+│   └── theme/
+│       └── app_theme.dart         # Thème Material 3
+└── main.dart                      # Point d'entrée
 ```
 
-### Stack technologique
-- **Flutter 3.22+** : Framework UI multiplateforme
-- **Riverpod** : Gestion d'état réactive
-- **go_router** : Navigation déclarative
-- **flutter_animate** : Animations avancées
-- **Google Fonts** : Typographie Poppins
-- **Material 3** : Design system moderne
+### 🔧 Technologies Utilisées
+- **Flutter 3.8+** avec Material 3
+- **Riverpod** pour la gestion d'état
+- **GoRouter** pour la navigation déclarative
+- **Flutter Animate** pour les animations
+- **Phosphor Icons** pour l'iconographie moderne
+- **Google Fonts** (Poppins) pour la typographie
 
-### Dépendances principales
-- `flutter_riverpod` : État global et réactivité
-- `go_router` : Navigation avec transitions
-- `flutter_animate` : Animations fluides
-- `google_fonts` : Polices personnalisées
-- `lottie` : Animations complexes
-- `camera` : Capture d'images
-- `google_maps_flutter` : Cartes interactives
+### 📱 Packages Principaux
+```yaml
+dependencies:
+  flutter_riverpod: ^2.5.1    # État réactif
+  go_router: ^16.0.0          # Navigation
+  flutter_animate: ^4.5.0     # Animations
+  google_fonts: ^6.2.1        # Typographie
+  phosphor_flutter: ^2.1.0    # Icônes modernes
+  camera: ^0.11.2             # Caméra pour scanner
+  google_maps_flutter: ^2.6.1 # Cartes
+  pdf: ^3.10.8                # Génération PDF
+```
 
-## 🚀 Installation et lancement
+## 🚀 Installation et Démarrage
 
 ### Prérequis
-- **Flutter SDK 3.22+**
-- **Dart 3.8+**
+- Flutter SDK 3.8+
+- Dart 3.0+
 - Android Studio / VS Code
-- Émulateur Android ou appareil physique
+- Émulateur Android/iOS ou appareil physique
 
 ### Installation
 ```bash
 # Cloner le projet
-git clone <repository-url>
-cd agrischield-ai
+git clone [repository-url]
+cd agrischield_ai
 
 # Installer les dépendances
 flutter pub get
+
+# Générer les fichiers (si nécessaire)
+flutter packages pub run build_runner build
 
 # Lancer l'application
 flutter run
 ```
 
 ### Configuration
-1. **Assets** : Ajouter les images dans `assets/images/`
-2. **Fonts** : Installer les polices Poppins dans `assets/fonts/`
-3. **API Keys** : Configurer les clés pour Google Maps et services IA
+1. **Permissions** : Caméra, localisation, stockage
+2. **API Keys** : Google Maps, services IA (à configurer)
+3. **Environnement** : Debug/Release selon le contexte
 
-## 📱 Flow de navigation
+## 🎭 Expérience Utilisateur
 
-### Parcours principal
-1. **Splash** (`/`) → Animation logo avec transformation
-2. **Accueil** (`/home`) → Hub principal avec bouton scanner
-3. **Scanner** (`/scan`) → Interface caméra avec overlay IA
-4. **Diagnostic** (`/diagnosis`) → Résultats d'analyse détaillés
-5. **Actions** (`/actions`) → Recommandations IA personnalisées
-6. **Rapport** (`/report`) → Génération PDF et partage
+### 🎨 Animations et Transitions
+- **Splash Screen** : Logo qui pulse avec transformation plante → circuit
+- **Navigation** : Slides latéraux et fades selon le contexte
+- **Cartes** : Apparition en cascade avec delays échelonnés
+- **Interactions** : Scale et glow sur tous les boutons tactiles
 
-### Fonctionnalités annexes
-- **Carte** (`/map`) → Visualisation communautaire
-- **Sentinelle** (`/sentinel`) → Configuration surveillance
-- **Historique** (`/history`) → Analyses précédentes
+### 📱 Responsive Design
+- **Portrait uniquement** pour une expérience mobile optimale
+- **Adaptation automatique** aux différentes tailles d'écran
+- **Safe Areas** respectées sur tous les appareils
+- **Densité de pixels** fixée pour une cohérence visuelle
 
-### Transitions animées
-| De → Vers | Animation |
-|-----------|-----------|
-| Splash → Home | Fade + ScaleUp |
-| Home → Scan | Hero + SlideUp |
-| Scan → Diagnosis | Fade + Glitch IA |
-| Diagnosis → Actions | SlideLeft |
-| Actions → Report | ScaleIn |
+### ♿ Accessibilité
+- **Contrastes élevés** pour une lisibilité optimale
+- **Tailles de police** adaptatives selon les préférences système
+- **Navigation clavier** pour les utilisateurs avec handicaps
+- **Feedback haptique** sur les interactions importantes
 
-## 🎨 Guide de style
+## 🔮 Fonctionnalités à Venir
 
-### Palette de couleurs
+### 🤖 Intégrations IA
+- [ ] **Modèle TensorFlow Lite** pour diagnostic offline
+- [ ] **Vision par ordinateur** pour analyse des cultures
+- [ ] **Prédictions météo** avec recommandations
+- [ ] **Optimisation des rendements** par machine learning
+
+### 🌐 Connectivité
+- [ ] **API Backend** pour synchronisation cloud
+- [ ] **Notifications push** pour alertes critiques
+- [ ] **Mode hors ligne** avec synchronisation différée
+- [ ] **Partage social** des succès agricoles
+
+### 📊 Analytics
+- [ ] **Tableaux de bord avancés** avec graphiques interactifs
+- [ ] **Rapports personnalisés** par période/culture
+- [ ] **Comparaisons régionales** avec anonymisation
+- [ ] **Prédictions saisonnières** basées sur l'historique
+
+## 🤝 Contribution
+
+Ce projet est conçu pour être **facilement extensible** :
+
+1. **Architecture modulaire** avec séparation claire des responsabilités
+2. **Design system cohérent** pour une intégration harmonieuse
+3. **Documentation inline** avec TODO pour les futures fonctionnalités
+4. **Tests unitaires** (à implémenter) pour la robustesse
+
+### Ajout de Fonctionnalités
 ```dart
-// Couleurs principales
-primaryGreen: #2E7D32      // Vert nature principal
-primaryGreenLight: #4CAF50 // Vert clair
-accentGold: #FFB300        // Or accent
-
-// Couleurs de statut
-statusHealthy: #4CAF50     // Plante saine
-statusWarning: #FF9800     // Attention
-statusDanger: #E53935      // Danger
-statusCritical: #D32F2F    // Critique
+// Exemple d'ajout d'une nouvelle page
+class NewFeaturePage extends StatefulWidget {
+  // Suivre le pattern existant avec AnimationController
+  // Utiliser le design system (AppColors, AppDimensions)
+  // Intégrer les animations Flutter Animate
+}
 ```
-
-### Typographie
-- **Famille** : Poppins (Google Fonts)
-- **Poids** : 300 (Light) à 700 (Bold)
-- **Hiérarchie** : displayLarge → bodySmall
-- **Espacement** : Optimisé pour la lisibilité mobile
-
-### Espacements
-- **XS** : 4px | **SM** : 8px | **MD** : 16px
-- **LG** : 24px | **XL** : 32px | **XXL** : 48px
-
-## 🔮 Intégrations futures
-
-### IA et Backend
-- **Gemini AI** : Analyse avancée des images
-- **Firebase** : Authentification et stockage
-- **Cloud Functions** : Traitement côté serveur
-- **ML Kit** : Reconnaissance on-device
-
-### Fonctionnalités avancées
-- **Réalité augmentée** : Superposition d'informations
-- **IoT Integration** : Capteurs connectés
-- **Chatbot IA** : Assistant conversationnel
-- **Analytics** : Tableau de bord agriculteur
-
-## 👥 Contribution
-
-### Structure de développement
-1. **Feature branches** : `feature/nom-fonctionnalite`
-2. **Commits conventionnels** : `feat:`, `fix:`, `ui:`, etc.
-3. **Tests requis** : Widget tests pour tous les composants
-4. **Documentation** : Dartdoc pour toutes les API publiques
-
-### Standards de code
-- **Linting** : Utilisation de `flutter_lints`
-- **Formatting** : `dart format` automatique
-- **Architecture** : Separation of concerns stricte
-- **Performance** : Optimisation des rebuilds
 
 ## 📄 Licence
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Projet développé pour **AgriShield AI** - Tous droits réservés © 2024
 
 ---
 
-**Développé avec ❤️ pour les agriculteurs du monde entier**
-
-*AgriShield AI - Quand l'intelligence artificielle rencontre l'agriculture traditionnelle*
+**🌱 L'agriculture de demain commence aujourd'hui avec AgriShield AI**
 

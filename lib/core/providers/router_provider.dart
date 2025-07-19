@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../ui/pages/splash_page.dart';
 import '../../ui/pages/home_page.dart';
+import '../../ui/pages/producer_dashboard.dart';
+import '../../ui/pages/consumer_home.dart';
 import '../../ui/pages/scan_page.dart';
 import '../../ui/pages/diagnosis_page.dart';
 import '../../ui/pages/actions_page.dart';
@@ -17,6 +19,8 @@ import '../models/plant_diagnosis.dart';
 class AppRoutes {
   static const String splash = '/';
   static const String home = '/home';
+  static const String producerDashboard = '/producer';
+  static const String consumerHome = '/consumer';
   static const String scan = '/scan';
   static const String diagnosis = '/diagnosis';
   static const String actions = '/actions';
@@ -55,6 +59,44 @@ final routerProvider = Provider<GoRouter>((ref) {
             return SlideTransition(
               position: animation.drive(
                 Tween(begin: const Offset(0.0, 1.0), end: Offset.zero)
+                    .chain(CurveTween(curve: Curves.easeInOut)),
+              ),
+              child: child,
+            );
+          },
+        ),
+      ),
+
+      // Producer Dashboard
+      GoRoute(
+        path: AppRoutes.producerDashboard,
+        name: 'producerDashboard',
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const ProducerDashboardPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: animation.drive(
+                Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
+                    .chain(CurveTween(curve: Curves.easeInOut)),
+              ),
+              child: child,
+            );
+          },
+        ),
+      ),
+
+      // Consumer Home
+      GoRoute(
+        path: AppRoutes.consumerHome,
+        name: 'consumerHome',
+        pageBuilder: (context, state) => CustomTransitionPage<void>(
+          key: state.pageKey,
+          child: const ConsumerHomePage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return SlideTransition(
+              position: animation.drive(
+                Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
                     .chain(CurveTween(curve: Curves.easeInOut)),
               ),
               child: child,

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:math' as math;
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/providers/router_provider.dart';
-import '../widgets/agri_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,547 +13,389 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+class _HomePageState extends State<HomePage>
+    with TickerProviderStateMixin {
   late AnimationController _backgroundController;
-  late AnimationController _contentController;
+  late AnimationController _cardsController;
 
   @override
   void initState() {
     super.initState();
-
     _backgroundController = AnimationController(
       duration: const Duration(seconds: 20),
       vsync: this,
     )..repeat();
 
-    _contentController = AnimationController(
+    _cardsController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
-    _startContentAnimation();
-  }
-
-  void _startContentAnimation() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    _contentController.forward();
+    // Démarrer l'animation des cartes
+    Future.delayed(const Duration(milliseconds: 300), () {
+      _cardsController.forward();
+    });
   }
 
   @override
   void dispose() {
     _backgroundController.dispose();
-    _contentController.dispose();
+    _cardsController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.backgroundBeige,
-              AppColors.backgroundLight,
-              AppColors.primaryGreen.withOpacity(0.1),
-            ],
-            stops: const [0.0, 0.6, 1.0],
+      body: Stack(
+        children: [
+          // Background animé
+          _buildAnimatedBackground(),
+          
+          // Contenu principal
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(AppDimensions.paddingLG),
+              child: Column(
+                children: [
+                  // Header avec logo et titre
+                  _buildHeader(),
+                  
+                  const SizedBox(height: AppDimensions.spaceXXL),
+                  
+                  // Cartes de sélection
+                  Expanded(
+                    child: _buildSelectionCards(),
+                  ),
+                  
+                  // Footer
+                  _buildFooter(),
+                ],
+              ),
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Stack(
-            children: [
-              // Particules flottantes animées
-              _buildFloatingParticles(),
-
-              // Contenu principal
-              _buildMainContent(),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildFloatingParticles() {
+  Widget _buildAnimatedBackground() {
     return AnimatedBuilder(
       animation: _backgroundController,
       builder: (context, child) {
-        return Stack(
-          children: List.generate(8, (index) {
-            final offset = _backgroundController.value * 2 * 3.14159;
-            final x = 50 + (index * 40) + 30 * math.sin(offset + index);
-            final y = 100 + (index * 80) + 20 * math.cos(offset + index * 0.5);
-
-            return Positioned(
-              left: x,
-              top: y,
-              child: Container(
-                width: 6 + (index % 3) * 2,
-                height: 6 + (index % 3) * 2,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryGreen.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            );
-          }),
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.backgroundBeige,
+                AppColors.backgroundLight,
+                AppColors.primaryGreen.withOpacity(0.05),
+              ],
+            ),
+          ),
+          child: Stack(
+            children: [
+              // Particules flottantes
+              ...List.generate(15, (index) {
+                final offset = Offset(
+                  (index * 50.0) % MediaQuery.of(context).size.width,
+                  (index * 80.0) % MediaQuery.of(context).size.height,
+                );
+                return Positioned(
+                  left: offset.dx + (30 * (_backgroundController.value * 2 - 1)),
+                  top: offset.dy + (20 * (_backgroundController.value * 2 - 1)),
+                  child: Transform.rotate(
+                    angle: _backgroundController.value * 6.28,
+                    child: Container(
+                      width: 4 + (index % 3) * 2,
+                      height: 4 + (index % 3) * 2,
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryGreen.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ),
         );
       },
-    );
-  }
-
-  Widget _buildMainContent() {
-    return Padding(
-      padding: const EdgeInsets.all(AppDimensions.paddingLG),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: AppDimensions.spaceLG),
-
-          // En-tête
-          _buildHeader(),
-
-          const SizedBox(height: AppDimensions.spaceXXL),
-
-          // Bouton principal scanner
-          _buildScannerButton(),
-
-          const SizedBox(height: AppDimensions.spaceXXL),
-
-          // Boutons secondaires
-          _buildSecondaryButtons(),
-
-          const Spacer(),
-
-          // Statistiques rapides
-          _buildQuickStats(),
-
-          const SizedBox(height: AppDimensions.spaceLG),
-        ],
-      ),
     );
   }
 
   Widget _buildHeader() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                      'Bonjour ! 🌱',
-                      style: Theme.of(context).textTheme.headlineMedium
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primaryGreen,
-                          ),
-                    )
-                    .animate(controller: _contentController)
-                    .fadeIn(duration: 600.ms, curve: Curves.easeOut)
-                    .slideX(
-                      begin: -0.3,
-                      end: 0.0,
-                      duration: 600.ms,
-                      curve: Curves.easeOut,
-                    ),
-
-                const SizedBox(height: AppDimensions.spaceSM),
-
-                Text(
-                      'Vos cultures sont protégées',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    )
-                    .animate(controller: _contentController)
-                    .fadeIn(
-                      duration: 600.ms,
-                      delay: 200.ms,
-                      curve: Curves.easeOut,
-                    )
-                    .slideX(
-                      begin: -0.3,
-                      end: 0.0,
-                      duration: 600.ms,
-                      delay: 200.ms,
-                      curve: Curves.easeOut,
-                    ),
-              ],
+        // Logo avec animation
+        Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(
+            gradient: AppColors.primaryGradient,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryGreen.withOpacity(0.3),
+                blurRadius: 20,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          child: const Icon(
+            PhosphorIcons.leaf,
+            size: 40,
+            color: AppColors.textOnDark,
+          ),
+        )
+            .animate()
+            .fadeIn(duration: 800.ms, curve: Curves.easeOut)
+            .scale(
+              begin: const Offset(0.5, 0.5),
+              end: const Offset(1.0, 1.0),
+              duration: 1000.ms,
+              curve: Curves.elasticOut,
             ),
 
-            // Badge de statut
-            Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppDimensions.paddingMD,
-                    vertical: AppDimensions.paddingSM,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.statusHealthy.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
-                    border: Border.all(
-                      color: AppColors.statusHealthy.withOpacity(0.3),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: AppColors.statusHealthy,
-                              shape: BoxShape.circle,
-                            ),
-                          )
-                          .animate(onPlay: (controller) => controller.repeat())
-                          .scale(
-                            duration: 1000.ms,
-                            begin: const Offset(1.0, 1.0),
-                            end: const Offset(1.3, 1.3),
-                          )
-                          .then()
-                          .scale(
-                            duration: 1000.ms,
-                            begin: const Offset(1.3, 1.3),
-                            end: const Offset(1.0, 1.0),
-                          ),
+        const SizedBox(height: AppDimensions.spaceLG),
 
-                      const SizedBox(width: AppDimensions.spaceSM),
+        // Titre principal
+        Text(
+          'AgriShield AI',
+          style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryGreen,
+            letterSpacing: 1.2,
+          ),
+        )
+            .animate()
+            .fadeIn(duration: 600.ms, delay: 300.ms, curve: Curves.easeOut)
+            .slideY(begin: 0.3, end: 0.0, duration: 600.ms, delay: 300.ms),
 
-                      Text(
-                        'En ligne',
-                        style: Theme.of(context).textTheme.labelMedium
-                            ?.copyWith(
-                              color: AppColors.statusHealthy,
-                              fontWeight: FontWeight.w500,
-                            ),
-                      ),
-                    ],
-                  ),
-                )
-                .animate(controller: _contentController)
-                .fadeIn(duration: 600.ms, delay: 400.ms, curve: Curves.easeOut)
-                .scale(
-                  begin: const Offset(0.8, 0.8),
-                  end: const Offset(1.0, 1.0),
-                  duration: 600.ms,
-                  delay: 400.ms,
-                  curve: Curves.elasticOut,
-                ),
-          ],
-        ),
+        const SizedBox(height: AppDimensions.spaceSM),
+
+        // Sous-titre
+        Text(
+          'Choisissez votre espace',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: AppColors.textSecondary,
+            fontWeight: FontWeight.w400,
+          ),
+        )
+            .animate()
+            .fadeIn(duration: 600.ms, delay: 500.ms, curve: Curves.easeOut)
+            .slideY(begin: 0.3, end: 0.0, duration: 600.ms, delay: 500.ms),
       ],
     );
   }
 
-  Widget _buildScannerButton() {
-    return Center(
-      child: Column(
-        children: [
-          // Titre du scanner
-          Text(
-                'Analyser une plante',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+  Widget _buildSelectionCards() {
+    return AnimatedBuilder(
+      animation: _cardsController,
+      builder: (context, child) {
+        return Column(
+          children: [
+            // Carte Producteur
+            Expanded(
+              child: _buildUserTypeCard(
+                title: 'Espace Producteur',
+                subtitle: 'Surveillez vos cultures avec l\'IA',
+                icon: PhosphorIcons.plant,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.primaryGreen,
+                    AppColors.primaryGreenDark,
+                  ],
                 ),
-                textAlign: TextAlign.center,
-              )
-              .animate(controller: _contentController)
-              .fadeIn(duration: 600.ms, delay: 600.ms, curve: Curves.easeOut)
-              .slideY(
-                begin: 0.3,
-                end: 0.0,
-                duration: 600.ms,
-                delay: 600.ms,
-                curve: Curves.easeOut,
+                onTap: () => context.go(AppRoutes.producerDashboard),
+                animationDelay: 0.0,
               ),
+            ),
 
-          const SizedBox(height: AppDimensions.spaceMD),
+            const SizedBox(height: AppDimensions.spaceLG),
 
-          Text(
-                'Prenez une photo pour un diagnostic IA instantané',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
+            // Carte Consommateur
+            Expanded(
+              child: _buildUserTypeCard(
+                title: 'Espace Consommateur',
+                subtitle: 'Découvrez des produits de qualité',
+                icon: PhosphorIcons.shoppingCart,
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.accentGold,
+                    AppColors.accentGoldDark,
+                  ],
                 ),
-                textAlign: TextAlign.center,
-              )
-              .animate(controller: _contentController)
-              .fadeIn(duration: 600.ms, delay: 700.ms, curve: Curves.easeOut),
-
-          const SizedBox(height: AppDimensions.spaceXL),
-
-          // Gros bouton scanner avec Hero animation
-          Hero(
-                tag: 'scanner_button',
-                child: Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      colors: [AppColors.scannerFrame, Color(0xFF00C853)],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.scannerFrame.withOpacity(0.3),
-                        blurRadius: 30,
-                        spreadRadius: 5,
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: () => context.push(AppRoutes.scan),
-                      borderRadius: BorderRadius.circular(100),
-                      child: const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.camera_alt_outlined,
-                              size: 48,
-                              color: AppColors.textOnDark,
-                            ),
-                            SizedBox(height: AppDimensions.spaceSM),
-                            Text(
-                              'Scanner',
-                              style: TextStyle(
-                                color: AppColors.textOnDark,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              )
-              .animate(controller: _contentController)
-              .fadeIn(duration: 800.ms, delay: 800.ms, curve: Curves.easeOut)
-              .scale(
-                begin: const Offset(0.5, 0.5),
-                end: const Offset(1.0, 1.0),
-                duration: 1000.ms,
-                delay: 800.ms,
-                curve: Curves.elasticOut,
-              )
-              .then()
-              .animate(onPlay: (controller) => controller.repeat(reverse: true))
-              .scale(
-                duration: 3000.ms,
-                begin: const Offset(1.0, 1.0),
-                end: const Offset(1.05, 1.05),
-                curve: Curves.easeInOut,
+                onTap: () => context.go(AppRoutes.consumerHome),
+                animationDelay: 0.2,
               ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSecondaryButtons() {
-    final buttons = [
-      {
-        'title': 'Carte communautaire',
-        'subtitle': 'Voir les alertes locales',
-        'icon': Icons.map_outlined,
-        'route': AppRoutes.map,
-        'color': AppColors.primaryGreen,
-      },
-      {
-        'title': 'Mode Sentinelle',
-        'subtitle': 'Surveillance automatique',
-        'icon': Icons.radar_outlined,
-        'route': AppRoutes.sentinel,
-        'color': AppColors.accentGold,
-      },
-      {
-        'title': 'Historique',
-        'subtitle': 'Vos analyses passées',
-        'icon': Icons.history_outlined,
-        'route': AppRoutes.history,
-        'color': AppColors.primaryGreenLight,
-      },
-    ];
-
-    return Column(
-      children: buttons.asMap().entries.map((entry) {
-        final index = entry.key;
-        final button = entry.value;
-
-        return Container(
-          margin: const EdgeInsets.only(bottom: AppDimensions.marginMD),
-          child: _buildSecondaryButton(
-            title: button['title'] as String,
-            subtitle: button['subtitle'] as String,
-            icon: button['icon'] as IconData,
-            color: button['color'] as Color,
-            onTap: () => context.push(button['route'] as String),
-            delay: 1000 + (index * 100),
-          ),
+            ),
+          ],
         );
-      }).toList(),
+      },
     );
   }
 
-  Widget _buildSecondaryButton({
+  Widget _buildUserTypeCard({
     required String title,
     required String subtitle,
     required IconData icon,
-    required Color color,
+    required Gradient gradient,
     required VoidCallback onTap,
-    required int delay,
+    required double animationDelay,
   }) {
-    return Container(
-          decoration: BoxDecoration(
-            color: AppColors.cardLight,
-            borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadowLight,
-                offset: const Offset(0, 2),
-                blurRadius: 8,
-              ),
-            ],
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimensions.paddingLG),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(
-                          AppDimensions.radiusMD,
-                        ),
-                      ),
-                      child: Icon(
-                        icon,
-                        color: color,
-                        size: AppDimensions.iconMD,
-                      ),
-                    ),
-
-                    const SizedBox(width: AppDimensions.spaceMD),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                  color: AppColors.textPrimary,
-                                ),
-                          ),
-                          const SizedBox(height: AppDimensions.spaceXS),
-                          Text(
-                            subtitle,
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(color: AppColors.textSecondary),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      color: AppColors.textSecondary,
-                      size: AppDimensions.iconSM,
-                    ),
-                  ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusXL),
+          boxShadow: [
+            BoxShadow(
+              color: gradient.colors.first.withOpacity(0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Stack(
+          children: [
+            // Motif décoratif
+            Positioned(
+              right: -20,
+              top: -20,
+              child: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.1),
                 ),
               ),
             ),
+            
+            // Contenu
+            Padding(
+              padding: const EdgeInsets.all(AppDimensions.paddingXL),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Icône
+                  Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
+                    ),
+                    child: Icon(
+                      icon,
+                      size: 30,
+                      color: AppColors.textOnDark,
+                    ),
+                  ),
+
+                  const SizedBox(height: AppDimensions.spaceLG),
+
+                  // Titre
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: AppColors.textOnDark,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: AppDimensions.spaceSM),
+
+                  // Sous-titre
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: AppColors.textOnDark.withOpacity(0.9),
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  // Flèche
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(AppDimensions.radiusMD),
+                      ),
+                      child: const Icon(
+                        PhosphorIcons.arrowRight,
+                        color: AppColors.textOnDark,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      )
+          .animate(controller: _cardsController)
+          .fadeIn(
+            duration: 800.ms,
+            delay: (animationDelay * 1000).ms,
+            curve: Curves.easeOut,
+          )
+          .slideX(
+            begin: animationDelay == 0.0 ? -0.3 : 0.3,
+            end: 0.0,
+            duration: 800.ms,
+            delay: (animationDelay * 1000).ms,
+            curve: Curves.easeOut,
+          )
+          .scale(
+            begin: const Offset(0.8, 0.8),
+            end: const Offset(1.0, 1.0),
+            duration: 800.ms,
+            delay: (animationDelay * 1000).ms,
+            curve: Curves.easeOut,
           ),
-        )
-        .animate(controller: _contentController)
-        .fadeIn(duration: 600.ms, delay: delay.ms, curve: Curves.easeOut)
-        .slideX(
-          begin: 0.3,
-          end: 0.0,
-          duration: 600.ms,
-          delay: delay.ms,
-          curve: Curves.easeOut,
-        );
+    );
   }
 
-  Widget _buildQuickStats() {
-    return Container(
-          padding: const EdgeInsets.all(AppDimensions.paddingLG),
-          decoration: BoxDecoration(
-            color: AppColors.primaryGreen.withOpacity(0.05),
-            borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
-            border: Border.all(color: AppColors.primaryGreen.withOpacity(0.1)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildStatItem('15', 'Analyses', Icons.analytics_outlined),
-              Container(
-                width: 1,
-                height: 40,
-                color: AppColors.primaryGreen.withOpacity(0.2),
-              ),
-              _buildStatItem('98%', 'Précision', Icons.verified_outlined),
-              Container(
-                width: 1,
-                height: 40,
-                color: AppColors.primaryGreen.withOpacity(0.2),
-              ),
-              _buildStatItem('24/7', 'Protection', Icons.shield_outlined),
-            ],
-          ),
-        )
-        .animate(controller: _contentController)
-        .fadeIn(duration: 600.ms, delay: 1400.ms, curve: Curves.easeOut)
-        .slideY(
-          begin: 0.3,
-          end: 0.0,
-          duration: 600.ms,
-          delay: 1400.ms,
-          curve: Curves.easeOut,
-        );
-  }
-
-  Widget _buildStatItem(String value, String label, IconData icon) {
+  Widget _buildFooter() {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: AppColors.primaryGreen, size: AppDimensions.iconMD),
-        const SizedBox(height: AppDimensions.spaceXS),
+        // Version
         Text(
-          value,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppColors.primaryGreen,
+          'Version 1.0.0',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: AppColors.textSecondary,
           ),
-        ),
+        )
+            .animate()
+            .fadeIn(duration: 600.ms, delay: 1000.ms),
+
+        const SizedBox(height: AppDimensions.spaceSM),
+
+        // Copyright
         Text(
-          label,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
-        ),
+          '© 2024 AgriShield AI',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        )
+            .animate()
+            .fadeIn(duration: 600.ms, delay: 1200.ms),
       ],
     );
   }
