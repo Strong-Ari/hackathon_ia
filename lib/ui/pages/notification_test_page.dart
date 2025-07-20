@@ -92,6 +92,7 @@ class _NotificationTestPageState extends ConsumerState<NotificationTestPage> {
     // Créer une notification de test
     final testNotification = NotificationModel(
       audioFile: 'audio_files/test.mp3',
+      imagePath: null,
       message:
           'Ceci est un test du système de notifications vocales. Votre plantation semble être en bonne santé.',
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
@@ -112,6 +113,7 @@ class _NotificationTestPageState extends ConsumerState<NotificationTestPage> {
     
     final testNotification = NotificationModel(
       audioFile: '',
+      imagePath: null,
       message: 'Test de notification simple - Votre système fonctionne correctement.',
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       titre: 'Notification Simple',
@@ -132,6 +134,7 @@ class _NotificationTestPageState extends ConsumerState<NotificationTestPage> {
     
     final testNotification = NotificationModel(
       audioFile: 'audio_files/voice_test.mp3',
+      imagePath: 'https://via.placeholder.com/300x200/4CAF50/FFFFFF?text=Test+Image',
       message: 'Test de notification vocale - Cette notification devrait être lue à voix haute.',
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       titre: 'Notification Vocale',
@@ -152,6 +155,7 @@ class _NotificationTestPageState extends ConsumerState<NotificationTestPage> {
     
     final testNotification = NotificationModel(
       audioFile: 'audio_files/urgent_alert.mp3',
+      imagePath: 'https://via.placeholder.com/300x200/F44336/FFFFFF?text=URGENT',
       message: 'URGENT: Test d\'alerte critique - Intervention immédiate requise!',
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       titre: 'ALERTE URGENTE',

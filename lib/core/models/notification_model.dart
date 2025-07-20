@@ -1,11 +1,13 @@
 class NotificationModel {
   final String audioFile;
+  final String? imagePath;
   final String message;
   final int timestamp;
   final String titre;
 
   NotificationModel({
     required this.audioFile,
+    this.imagePath,
     required this.message,
     required this.timestamp,
     required this.titre,
@@ -14,6 +16,7 @@ class NotificationModel {
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
       audioFile: json['audio_file'] ?? '',
+      imagePath: json['image_path'],
       message: json['message'] ?? '',
       timestamp: json['timestamp'] ?? 0,
       titre: json['titre'] ?? '',
@@ -23,6 +26,7 @@ class NotificationModel {
   Map<String, dynamic> toJson() {
     return {
       'audio_file': audioFile,
+      'image_path': imagePath,
       'message': message,
       'timestamp': timestamp,
       'titre': titre,
@@ -45,6 +49,6 @@ class NotificationModel {
 
   @override
   String toString() {
-    return 'NotificationModel{audioFile: $audioFile, message: $message, timestamp: $timestamp, titre: $titre}';
+    return 'NotificationModel{audioFile: $audioFile, imagePath: $imagePath, message: $message, timestamp: $timestamp, titre: $titre}';
   }
 }

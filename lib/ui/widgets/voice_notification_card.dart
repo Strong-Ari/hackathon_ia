@@ -109,9 +109,64 @@ class VoiceNotificationCard extends StatelessWidget {
                               ),
                               height: 1.4,
                             ),
-                            maxLines: 3,
+                            maxLines: notification.imagePath != null ? 2 : 3,
                             overflow: TextOverflow.ellipsis,
                           ),
+
+                          // Image si disponible
+                          if (notification.imagePath != null) ...[
+                            const SizedBox(height: 8),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Container(
+                                height: 120,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.onSurface.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Image.network(
+                                  notification.imagePath!,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value: loadingProgress.expectedTotalBytes != null
+                                            ? loadingProgress.cumulativeBytesLoaded /
+                                                loadingProgress.expectedTotalBytes!
+                                            : null,
+                                        strokeWidth: 2,
+                                      ),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: theme.colorScheme.onSurface.withOpacity(0.1),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            PhosphorIcons.imageBroken(),
+                                            color: theme.colorScheme.onSurface.withOpacity(0.5),
+                                            size: 32,
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Image non disponible',
+                                            style: GoogleFonts.poppins(
+                                              fontSize: 12,
+                                              color: theme.colorScheme.onSurface.withOpacity(0.5),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
 
                           const SizedBox(height: 8),
 
