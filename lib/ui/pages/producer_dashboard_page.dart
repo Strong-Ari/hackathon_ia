@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/constants/app_colors.dart';
+import '../../core/providers/dashboard_metrics_provider.dart';
 import '../widgets/notification_history_panel.dart';
 
 class ProducerDashboardPage extends ConsumerStatefulWidget {
@@ -246,75 +247,191 @@ class _ProducerDashboardPageState extends ConsumerState<ProducerDashboardPage>
   }
 
   Widget _buildMainMetrics() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Métriques en temps réel',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+    return Consumer(
+      builder: (context, ref, child) {
+        final metrics = ref.watch(dashboardMetricsProvider);
+        
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    'Métriques en temps réel',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.statusHealthy.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: AppColors.statusHealthy,
+                            shape: BoxShape.circle,
+                          ),
+                        ).animate(onPlay: (controller) => controller.repeat())
+                         .scale(duration: 1000.ms, begin: const Offset(1.0, 1.0), end: const Offset(1.3, 1.3))
+                         .then()
+                         .scale(duration: 1000.ms, begin: const Offset(1.3, 1.3), end: const Offset(1.0, 1.0)),
+                        const SizedBox(width: 6),
+                        Text(
+                          'En direct',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.statusHealthy,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                                 ],
+               ),
+               const SizedBox(height: 8),
+               _buildLastUpdateInfo(metrics.lastUpdate),
+               const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildMetricCard(
+                      title: 'Température',
+                      value: metrics.temperatureDisplay,
+                      subtitle: metrics.temperatureStatus,
+                      icon: Icons.thermostat,
+                      color: _getTemperatureColor(metrics.temperature),
+                      progress: metrics.temperatureProgress,
+                      delay: 200,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildMetricCard(
+                      title: 'Humidité',
+                      value: metrics.humidityDisplay,
+                      subtitle: metrics.humidityStatus,
+                      icon: Icons.water_drop,
+                      color: _getHumidityColor(metrics.humidity),
+                      progress: metrics.humidityProgress,
+                      delay: 400,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildMetricCard(
+                      title: 'Capteurs',
+                      value: metrics.sensorsDisplay,
+                      subtitle: metrics.sensorsStatus,
+                      icon: Icons.sensors,
+                      color: _getSensorsColor(metrics.activeSensors, metrics.totalSensors),
+                      progress: metrics.sensorsProgress,
+                      delay: 600,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildMetricCard(
+                      title: 'Santé Plants',
+                      value: metrics.plantHealthDisplay,
+                      subtitle: metrics.plantHealthStatus,
+                      icon: Icons.eco,
+                      color: _getPlantHealthColor(metrics.plantHealth),
+                      progress: metrics.plantHealth,
+                      delay: 800,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Color _getTemperatureColor(double temperature) {
+    if (temperature < 18) return AppColors.statusDanger;
+    if (temperature > 30) return AppColors.statusWarning;
+    return AppColors.statusHealthy;
+  }
+
+  Color _getHumidityColor(double humidity) {
+    if (humidity < 40 || humidity > 80) return AppColors.statusWarning;
+    return AppColors.primaryGreen;
+  }
+
+  Color _getSensorsColor(int active, int total) {
+    if (active == total) return AppColors.statusHealthy;
+    if (active < total * 0.8) return AppColors.statusDanger;
+    return AppColors.statusWarning;
+  }
+
+  Color _getPlantHealthColor(double health) {
+    if (health > 0.90) return AppColors.statusHealthy;
+    if (health > 0.70) return AppColors.primaryGreen;
+    if (health > 0.50) return AppColors.statusWarning;
+    return AppColors.statusDanger;
+  }
+
+  Widget _buildLastUpdateInfo(DateTime lastUpdate) {
+    final now = DateTime.now();
+    final difference = now.difference(lastUpdate);
+    
+    String timeAgo;
+    if (difference.inSeconds < 10) {
+      timeAgo = 'À l\'instant';
+    } else if (difference.inSeconds < 60) {
+      timeAgo = 'Il y a ${difference.inSeconds}s';
+    } else if (difference.inMinutes < 60) {
+      timeAgo = 'Il y a ${difference.inMinutes}min';
+    } else {
+      timeAgo = 'Il y a ${difference.inHours}h';
+    }
+
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppColors.textSecondary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.access_time,
+              size: 14,
+              color: AppColors.textSecondary,
             ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildMetricCard(
-                  title: 'Température',
-                  value: '24°C',
-                  subtitle: 'Optimal',
-                  icon: Icons.thermostat,
-                  color: AppColors.statusHealthy,
-                  progress: 0.75,
-                  delay: 200,
+            const SizedBox(width: 4),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: Text(
+                'Dernière mise à jour: $timeAgo',
+                key: ValueKey(timeAgo),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildMetricCard(
-                  title: 'Humidité',
-                  value: '68%',
-                  subtitle: 'Bon niveau',
-                  icon: Icons.water_drop,
-                  color: AppColors.primaryGreen,
-                  progress: 0.68,
-                  delay: 400,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildMetricCard(
-                  title: 'Capteurs',
-                  value: '12/12',
-                  subtitle: 'Tous actifs',
-                  icon: Icons.sensors,
-                  color: AppColors.statusHealthy,
-                  progress: 1.0,
-                  delay: 600,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildMetricCard(
-                  title: 'Santé Plants',
-                  value: '98%',
-                  subtitle: 'Excellent',
-                  icon: Icons.eco,
-                  color: AppColors.statusHealthy,
-                  progress: 0.98,
-                  delay: 800,
-                ),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -355,11 +472,21 @@ class _ProducerDashboardPageState extends ConsumerState<ProducerDashboardPage>
                     child: Icon(icon, color: color, size: 20),
                   ),
                   const Spacer(),
-                  Text(
-                    value,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (Widget child, Animation<double> animation) {
+                      return ScaleTransition(
+                        scale: animation,
+                        child: child,
+                      );
+                    },
+                    child: Text(
+                      value,
+                      key: ValueKey(value),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ),
                 ],
@@ -372,19 +499,25 @@ class _ProducerDashboardPageState extends ConsumerState<ProducerDashboardPage>
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w500,
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: Text(
+                  subtitle,
+                  key: ValueKey(subtitle),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
-              AnimatedBuilder(
-                animation: _chartController,
-                builder: (context, child) {
+              TweenAnimationBuilder<double>(
+                duration: const Duration(milliseconds: 800),
+                tween: Tween(begin: 0.0, end: progress),
+                curve: Curves.easeInOut,
+                builder: (context, animatedProgress, child) {
                   return LinearProgressIndicator(
-                    value: progress * _chartController.value,
+                    value: animatedProgress,
                     backgroundColor: color.withOpacity(0.1),
                     valueColor: AlwaysStoppedAnimation<Color>(color),
                     borderRadius: BorderRadius.circular(4),
@@ -702,13 +835,19 @@ class _ProducerDashboardPageState extends ConsumerState<ProducerDashboardPage>
   }
 
   Future<void> _refreshData() async {
-    await Future.delayed(const Duration(seconds: 2));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Données actualisées'),
-        backgroundColor: AppColors.statusHealthy,
-      ),
-    );
+    // Forcer une mise à jour des métriques
+    ref.read(dashboardMetricsProvider.notifier).refreshMetrics();
+    
+    await Future.delayed(const Duration(milliseconds: 500));
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Données actualisées'),
+          backgroundColor: AppColors.statusHealthy,
+        ),
+      );
+    }
   }
 
   void _showNotificationHistory() {
