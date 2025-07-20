@@ -60,9 +60,8 @@ class NotificationService {
   Future<void> _saveProcessedTimestamps() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final List<String> timestamps = _processedTimestamps
-          .map((t) => t.toString())
-          .toList();
+      final List<String> timestamps =
+          _processedTimestamps.map((t) => t.toString()).toList();
       await prefs.setStringList('processed_timestamps', timestamps);
     } catch (e) {
       debugPrint('Erreur lors de la sauvegarde des timestamps: $e');
@@ -105,9 +104,8 @@ class NotificationService {
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        final List<NotificationModel> notifications = data
-            .map((json) => NotificationModel.fromJson(json))
-            .toList();
+        final List<NotificationModel> notifications =
+            data.map((json) => NotificationModel.fromJson(json)).toList();
 
         // Trier par timestamp pour traiter les plus récentes en premier
         notifications.sort((a, b) => b.timestamp.compareTo(a.timestamp));
@@ -127,22 +125,31 @@ class NotificationService {
   /// Traite une nouvelle notification
   Future<void> _processNewNotification(NotificationModel notification) async {
     try {
-      debugPrint('Nouvelle notification reçue: ${notification.titre}');
+      debugPrint('📢 Nouvelle notification reçue: ${notification.titre}');
+      debugPrint('🔍 Détails de la notification: ${notification.toString()}');
 
       // Marquer comme traitée
       _processedTimestamps.add(notification.timestamp);
       await _saveProcessedTimestamps();
+      debugPrint('✅ Notification marquée comme traitée');
 
       // Ajouter à l'historique
-      await _historyService?.addNotification(notification);
+      if (_historyService == null) {
+        debugPrint('❌ Service d\'historique non disponible');
+      } else {
+        debugPrint('📝 Ajout de la notification à l\'historique...');
+        await _historyService?.addNotification(notification);
+        debugPrint('✅ Notification ajoutée à l\'historique');
+      }
 
       // Émettre la notification dans le stream
       _notificationController.sink.add(notification);
+      debugPrint('📡 Notification émise dans le stream');
 
       // Jouer l'audio
       await _playNotificationAudio(notification);
     } catch (e) {
-      debugPrint('Erreur lors du traitement de la notification: $e');
+      debugPrint('❌ Erreur lors du traitement de la notification: $e');
     }
   }
 
@@ -162,30 +169,41 @@ class NotificationService {
     }
   }
 
-  /// Joue le son d'alerte court
-  Future<void> _playAlertSound() async {
-    try {
-      await _alertPlayer.setAsset(ApiConstants.alertSoundAsset);
-      await _alertPlayer.play();
-    } catch (e) {
-      debugPrint('Erreur lors de la lecture du son d\'alerte: $e');
-    }
-  }
-
   /// Joue le message vocal depuis l'URL distante
   Future<void> _playVoiceMessage(NotificationModel notification) async {
     try {
-      // Récupérer l'URL depuis SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      final baseUrl = prefs.getString('api_base_url') ?? ApiConstants.baseUrl;
-      final audioUrl = '$baseUrl/${notification.audioFile}';
+      debugPrint(
+          '🔊 Tentative de lecture de l\'audio: ${notification.audioFile}');
 
-      debugPrint('Lecture du message vocal: $audioUrl');
+      // Vérifier si le fichier audio existe
+      try {
+        final response = await _dio.head(notification.audioFile);
+        debugPrint('✅ Fichier audio trouvé: ${response.statusCode}');
+      } catch (e) {
+        debugPrint('❌ Erreur lors de la vérification du fichier audio: $e');
+        return;
+      }
 
-      await _audioPlayer.setUrl(audioUrl);
+      debugPrint('▶️ Tentative de lecture audio...');
+      await _audioPlayer.setUrl(notification.audioFile);
       await _audioPlayer.play();
+      debugPrint('✅ Lecture audio démarrée');
     } catch (e) {
-      debugPrint('Erreur lors de la lecture du message vocal: $e');
+      debugPrint('❌ Erreur lors de la lecture du message vocal: $e');
+    }
+  }
+
+  /// Joue le son d'alerte court
+  Future<void> _playAlertSound() async {
+    try {
+      debugPrint(
+          '🔔 Chargement du son d\'alerte: ${ApiConstants.alertSoundAsset}');
+      await _alertPlayer.setAsset(ApiConstants.alertSoundAsset);
+      debugPrint('▶️ Lecture du son d\'alerte...');
+      await _alertPlayer.play();
+      debugPrint('✅ Son d\'alerte joué');
+    } catch (e) {
+      debugPrint('❌ Erreur lors de la lecture du son d\'alerte: $e');
     }
   }
 

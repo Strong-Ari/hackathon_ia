@@ -61,15 +61,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           ),
         ),
         child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              // Header avec animation de fond
-              SliverToBoxAdapter(child: _buildAnimatedHeader()),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Header avec animation de fond
+                _buildAnimatedHeader(),
 
-              // Contenu principal
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Padding(
+                // Contenu principal
+                Padding(
                   padding: const EdgeInsets.all(24.0),
                   child: Column(
                     children: [
@@ -79,44 +78,38 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       const SizedBox(height: 40),
 
                       // Cartes des espaces
-                      Expanded(
-                        child: Column(
-                          children: [
-                            _buildSpaceCard(
-                              title: 'Espace Producteur',
-                              subtitle: 'Surveillez et optimisez vos cultures',
-                              icon: Icons.agriculture,
-                              gradient: const LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  AppColors.primaryGreen,
-                                  AppColors.primaryGreenDark,
-                                ],
-                              ),
-                              delay: 0,
-                              onTap: () => _navigateToProducerSpace(),
-                            ),
-
-                            const SizedBox(height: 20),
-
-                            _buildSpaceCard(
-                              title: 'Espace Consommateur',
-                              subtitle: 'Découvrez des produits de qualité',
-                              icon: Icons.restaurant,
-                              gradient: const LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  AppColors.accentGold,
-                                  AppColors.accentGoldDark,
-                                ],
-                              ),
-                              delay: 200,
-                              onTap: () => _navigateToConsumerSpace(),
-                            ),
+                      _buildSpaceCard(
+                        title: 'Espace Producteur',
+                        subtitle: 'Surveillez et optimisez vos cultures',
+                        icon: Icons.agriculture,
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.primaryGreen,
+                            AppColors.primaryGreenDark,
                           ],
                         ),
+                        delay: 0,
+                        onTap: () => _navigateToProducerSpace(),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      _buildSpaceCard(
+                        title: 'Espace Consommateur',
+                        subtitle: 'Découvrez des produits de qualité',
+                        icon: Icons.restaurant,
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.accentGold,
+                            AppColors.accentGoldDark,
+                          ],
+                        ),
+                        delay: 200,
+                        onTap: () => _navigateToConsumerSpace(),
                       ),
 
                       const SizedBox(height: 20),
@@ -126,8 +119,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -169,8 +162,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           index % 3 == 0
                               ? Icons.eco
                               : index % 3 == 1
-                              ? Icons.wb_sunny_outlined
-                              : Icons.water_drop_outlined,
+                                  ? Icons.wb_sunny_outlined
+                                  : Icons.water_drop_outlined,
                           size: 12 + (index % 3) * 4,
                           color: AppColors.primaryGreen,
                         ),
@@ -188,27 +181,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                      'AgriShield AI',
-                      style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  'AgriShield AI',
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.primaryGreen,
                         letterSpacing: 1.5,
                       ),
-                    )
+                )
                     .animate()
                     .fadeIn(duration: const Duration(milliseconds: 800))
                     .slideY(begin: -0.3, end: 0),
-
                 const SizedBox(height: 8),
-
                 Text(
-                      'Votre assistant intelligent pour l\'agriculture',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  'Votre assistant intelligent pour l\'agriculture',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: AppColors.textSecondary,
                         fontWeight: FontWeight.w300,
                       ),
-                      textAlign: TextAlign.center,
-                    )
+                  textAlign: TextAlign.center,
+                )
                     .animate()
                     .fadeIn(
                       delay: const Duration(milliseconds: 400),
@@ -225,58 +216,58 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   Widget _buildWelcomeMessage() {
     return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.8),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.primaryGreen.withOpacity(0.2)),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadowLight,
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primaryGreen.withOpacity(0.2)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowLight,
+            blurRadius: 10,
+            offset: const Offset(0, 2),
           ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryGreen.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.waving_hand,
-                  color: AppColors.accentGold,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Bienvenue !',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.primaryGreen.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.waving_hand,
+              color: AppColors.accentGold,
+              size: 28,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Bienvenue !',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Choisissez votre espace pour commencer',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Choisissez votre espace pour commencer',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),
-                    ),
-                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        )
+        ],
+      ),
+    )
         .animate()
         .fadeIn(
           delay: const Duration(milliseconds: 600),
@@ -358,7 +349,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 const SizedBox(height: 8),
                                 Text(
                                   subtitle,
-                                  style: Theme.of(context).textTheme.bodyLarge
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
                                       ?.copyWith(
                                         color: Colors.white.withOpacity(0.9),
                                         fontWeight: FontWeight.w300,
@@ -445,9 +438,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 Text(
                   'Test Notifications',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Colors.grey[600],
-                    fontSize: 10,
-                  ),
+                        color: Colors.grey[600],
+                        fontSize: 10,
+                      ),
                 ),
               ],
             ),
@@ -470,18 +463,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               Text(
                 'Agriculture Intelligente • Afrique 2024',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: AppColors.primaryGreen,
-                  fontWeight: FontWeight.w500,
-                ),
+                      color: AppColors.primaryGreen,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
             ],
           ),
         ),
       ],
     ).animate().fadeIn(
-      delay: const Duration(milliseconds: 1000),
-      duration: const Duration(milliseconds: 800),
-    );
+          delay: const Duration(milliseconds: 1000),
+          duration: const Duration(milliseconds: 800),
+        );
   }
 
   Widget _buildStatItem(String number, String label) {
@@ -490,9 +483,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         Text(
           number,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppColors.primaryGreen,
-          ),
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryGreen,
+              ),
         ),
         Text(
           label,

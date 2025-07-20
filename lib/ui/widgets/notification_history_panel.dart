@@ -11,11 +11,13 @@ class NotificationHistoryPanel extends ConsumerStatefulWidget {
   const NotificationHistoryPanel({super.key});
 
   @override
-  ConsumerState<NotificationHistoryPanel> createState() => NotificationHistoryPanelState();
+  ConsumerState<NotificationHistoryPanel> createState() =>
+      NotificationHistoryPanelState();
 }
 
 // Exposer la classe State pour permettre l'accès aux méthodes publiques
-class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPanel>
+class NotificationHistoryPanelState
+    extends ConsumerState<NotificationHistoryPanel>
     with TickerProviderStateMixin {
   late AnimationController _slideController;
   bool _isVisible = false;
@@ -39,7 +41,7 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
     setState(() {
       _isVisible = !_isVisible;
     });
-    
+
     if (_isVisible) {
       _slideController.forward();
     } else {
@@ -112,7 +114,7 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
         children: [
           // Header
           _buildHeader(),
-          
+
           // Liste des notifications
           Expanded(
             child: _buildNotificationsList(),
@@ -143,9 +145,9 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
             child: Text(
               'Historique des notifications',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppColors.textOnDark,
-                fontWeight: FontWeight.bold,
-              ),
+                    color: AppColors.textOnDark,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ),
           IconButton(
@@ -161,16 +163,19 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
   }
 
   Widget _buildNotificationsList() {
+    debugPrint('🔄 Construction de la liste des notifications');
     final historyAsync = ref.watch(notificationHistoryProvider);
-    
+
     return historyAsync.when(
       data: (notifications) {
+        debugPrint('📱 Données reçues: ${notifications.length} notifications');
         if (notifications.isEmpty) {
           return _buildEmptyState();
         }
-        
+
         return RefreshIndicator(
           onRefresh: () async {
+            debugPrint('🔄 Rafraîchissement demandé');
             await ref.read(notificationHistoryServiceProvider).refreshHistory();
           },
           child: ListView.builder(
@@ -178,24 +183,45 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
             itemCount: notifications.length,
             itemBuilder: (context, index) {
               final notification = notifications[index];
+              debugPrint(
+                  '📝 Construction de l\'item $index: ${notification.titre}');
               return _buildNotificationItem(notification, index);
             },
           ),
         );
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(
-          color: AppColors.primaryGreen,
-        ),
-      ),
-      error: (error, stack) => _buildErrorState(error.toString()),
+      loading: () {
+        debugPrint('⏳ Affichage du loader');
+        return const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(
+                color: AppColors.primaryGreen,
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Chargement de l\'historique...',
+                style: TextStyle(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      error: (error, stack) {
+        debugPrint('❌ Erreur: $error');
+        return _buildErrorState(error.toString());
+      },
     );
   }
 
   Widget _buildNotificationItem(NotificationModel notification, int index) {
-    final dateTime = DateTime.fromMillisecondsSinceEpoch(notification.timestamp * 1000);
+    final dateTime =
+        DateTime.fromMillisecondsSinceEpoch(notification.timestamp * 1000);
     final formattedDate = DateFormat('dd/MM/yyyy à HH:mm').format(dateTime);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -239,10 +265,11 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
                       Expanded(
                         child: Text(
                           notification.titre,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.textPrimary,
+                                  ),
                         ),
                       ),
                       IconButton(
@@ -255,19 +282,19 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Message
                   Text(
                     notification.message,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                          color: AppColors.textSecondary,
+                        ),
                     maxLines: notification.imagePath != null ? 1 : 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  
+
                   // Image si disponible
                   if (notification.imagePath != null) ...[
                     const SizedBox(height: 8),
@@ -287,7 +314,8 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
                             if (loadingProgress == null) return child;
                             return Center(
                               child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes != null
+                                value: loadingProgress.expectedTotalBytes !=
+                                        null
                                     ? loadingProgress.cumulativeBytesLoaded /
                                         loadingProgress.expectedTotalBytes!
                                     : null,
@@ -304,15 +332,20 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
                                 children: [
                                   Icon(
                                     Icons.broken_image,
-                                    color: AppColors.textSecondary.withOpacity(0.5),
+                                    color: AppColors.textSecondary
+                                        .withOpacity(0.5),
                                     size: 32,
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     'Image non disponible',
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.textSecondary.withOpacity(0.5),
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                          color: AppColors.textSecondary
+                                              .withOpacity(0.5),
+                                        ),
                                   ),
                                 ],
                               ),
@@ -322,9 +355,9 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
                       ),
                     ),
                   ],
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Date et heure
                   Row(
                     children: [
@@ -337,8 +370,8 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
                       Text(
                         formattedDate,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ],
                   ),
@@ -348,9 +381,10 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
           ),
         ),
       ),
-    ).animate(delay: Duration(milliseconds: index * 50))
-     .slideX(begin: 0.3, end: 0, duration: 300.ms)
-     .fadeIn(duration: 300.ms);
+    )
+        .animate(delay: Duration(milliseconds: index * 50))
+        .slideX(begin: 0.3, end: 0, duration: 300.ms)
+        .fadeIn(duration: 300.ms);
   }
 
   Widget _buildEmptyState() {
@@ -374,16 +408,16 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
           Text(
             'Aucune notification',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             'Vos notifications apparaîtront ici',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+                  color: AppColors.textSecondary,
+                ),
           ),
         ],
       ),
@@ -404,16 +438,16 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
           Text(
             'Erreur de chargement',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
             error,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+                  color: AppColors.textSecondary,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -422,8 +456,10 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
   }
 
   void _playAudio(NotificationModel notification) {
-    ref.read(notificationHistoryServiceProvider).playNotificationAudio(notification);
-    
+    ref
+        .read(notificationHistoryServiceProvider)
+        .playNotificationAudio(notification);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -442,65 +478,188 @@ class NotificationHistoryPanelState extends ConsumerState<NotificationHistoryPan
   }
 
   void _showNotificationDetails(NotificationModel notification) {
-    final dateTime = DateTime.fromMillisecondsSinceEpoch(notification.timestamp * 1000);
+    final dateTime =
+        DateTime.fromMillisecondsSinceEpoch(notification.timestamp * 1000);
     final formattedDate = DateFormat('dd/MM/yyyy à HH:mm:ss').format(dateTime);
-    
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            const Icon(Icons.notifications_active, color: AppColors.primaryGreen),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                notification.titre,
-                style: const TextStyle(color: AppColors.primaryGreen),
-              ),
-            ),
-          ],
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Message:',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9,
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.8,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // En-tête
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryGreen,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.notifications_active, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        notification.titre,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(notification.message),
-            const SizedBox(height: 16),
-            Text(
-              'Reçu le:',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+
+              // Contenu scrollable
+              Flexible(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Message:',
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(notification.message),
+                      const SizedBox(height: 16),
+
+                      // Image si disponible
+                      if (notification.imagePath != null) ...[
+                        Text(
+                          'Image:',
+                          style:
+                              Theme.of(context).textTheme.labelMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                        const SizedBox(height: 8),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            height: 200,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: AppColors.textSecondary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Image.network(
+                              notification.imagePath!,
+                              fit: BoxFit.cover,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes !=
+                                            null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                    strokeWidth: 2,
+                                    color: AppColors.primaryGreen,
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color:
+                                      AppColors.textSecondary.withOpacity(0.1),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.broken_image,
+                                        color: AppColors.textSecondary
+                                            .withOpacity(0.5),
+                                        size: 32,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Image non disponible',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                              color: AppColors.textSecondary
+                                                  .withOpacity(0.5),
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      Text(
+                        'Reçu le:',
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(formattedDate),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(formattedDate),
-          ],
+
+              // Actions
+              Container(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Fermer'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _playAudio(notification);
+                      },
+                      icon: const Icon(Icons.volume_up),
+                      label: const Text('Écouter'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryGreen,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Fermer'),
-          ),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _playAudio(notification);
-            },
-            icon: const Icon(Icons.volume_up),
-            label: const Text('Écouter'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryGreen,
-              foregroundColor: Colors.white,
-            ),
-          ),
-        ],
       ),
     );
   }

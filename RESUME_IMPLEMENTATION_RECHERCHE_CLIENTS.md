@@ -74,7 +74,7 @@ ProducerProfilePage
 - **Couleurs** : Vert AgriShield + Orange accent
 - **Notification** : SnackBar de succès
 
-## 🧪 Test & Validation
+## 🧪 **Test** & Validation
 
 ### ✅ Points de Contrôle
 - [x] Widget créé et fonctionnel

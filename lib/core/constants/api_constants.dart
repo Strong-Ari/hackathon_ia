@@ -1,6 +1,7 @@
 class ApiConstants {
   // Configuration de l'API Flask
-  static const String baseUrl = 'http://ADRESSE_IP:PORT';
+  static const String baseUrl =
+      'http://192.168.1.11:8000'; // Mettez à jour avec votre adresse IP locale
   static const String notificationsEndpoint = '/notifications/';
 
   // Configuration du polling
