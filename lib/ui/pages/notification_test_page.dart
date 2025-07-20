@@ -92,6 +92,7 @@ class _NotificationTestPageState extends ConsumerState<NotificationTestPage> {
     // Créer une notification de test
     final testNotification = NotificationModel(
       audioFile: 'audio_files/test.mp3',
+      imagePath: null,
       message:
           'Ceci est un test du système de notifications vocales. Votre plantation semble être en bonne santé.',
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
@@ -103,6 +104,69 @@ class _NotificationTestPageState extends ConsumerState<NotificationTestPage> {
       const SnackBar(
         content: Text('Notification de test créée (sans audio réel)'),
         backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  Future<void> _testSimpleNotification() async {
+    final service = ref.read(notificationServiceProvider);
+    
+    final testNotification = NotificationModel(
+      audioFile: '',
+      imagePath: null,
+      message: 'Test de notification simple - Votre système fonctionne correctement.',
+      timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      titre: 'Notification Simple',
+    );
+
+    // Simuler l'affichage d'une notification simple
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('✅ Notification simple testée'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  Future<void> _testVoiceNotification() async {
+    final service = ref.read(notificationServiceProvider);
+    
+    final testNotification = NotificationModel(
+      audioFile: 'audio_files/voice_test.mp3',
+      imagePath: 'https://via.placeholder.com/300x200/4CAF50/FFFFFF?text=Test+Image',
+      message: 'Test de notification vocale - Cette notification devrait être lue à voix haute.',
+      timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      titre: 'Notification Vocale',
+    );
+
+    // Simuler une notification vocale
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('🔊 Notification vocale testée (audio simulé)'),
+        backgroundColor: Colors.blue,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
+  Future<void> _testUrgentNotification() async {
+    final service = ref.read(notificationServiceProvider);
+    
+    final testNotification = NotificationModel(
+      audioFile: 'audio_files/urgent_alert.mp3',
+      imagePath: 'https://via.placeholder.com/300x200/F44336/FFFFFF?text=URGENT',
+      message: 'URGENT: Test d\'alerte critique - Intervention immédiate requise!',
+      timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      titre: 'ALERTE URGENTE',
+    );
+
+    // Simuler une notification urgente
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('🚨 Notification urgente testée'),
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 4),
       ),
     );
   }
@@ -233,6 +297,72 @@ class _NotificationTestPageState extends ConsumerState<NotificationTestPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildStatusCard() {
+    final theme = Theme.of(context);
+    final notificationService = ref.watch(notificationServiceProvider);
+    
+    return Column(
+      children: [
+        _buildInfoCard(
+          'État du Polling',
+          _isPolling ? 'Actif' : 'Inactif',
+          _isPolling ? PhosphorIcons.play() : PhosphorIcons.pause(),
+          _isPolling ? Colors.green : Colors.orange,
+        ),
+        const SizedBox(height: 12),
+        _buildInfoCard(
+          'URL API Configurée',
+          _baseUrlController.text.isEmpty ? 'Non configurée' : _baseUrlController.text,
+          PhosphorIcons.globe(),
+          _baseUrlController.text.isEmpty ? Colors.red : Colors.blue,
+        ),
+        const SizedBox(height: 12),
+        _buildInfoCard(
+          'Dernière Vérification',
+          'Jamais', // You can enhance this to show actual last check time
+          PhosphorIcons.clock(),
+          Colors.grey,
+        ),
+        const SizedBox(height: 16),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: _togglePolling,
+                icon: Icon(_isPolling ? PhosphorIcons.pause() : PhosphorIcons.play()),
+                label: Text(_isPolling ? 'Arrêter Polling' : 'Démarrer Polling'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _isPolling ? Colors.orange : Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: _clearCache,
+                icon: Icon(PhosphorIcons.trash()),
+                label: const Text('Vider Cache'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.error,
+                  foregroundColor: theme.colorScheme.onError,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
