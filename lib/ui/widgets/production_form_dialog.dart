@@ -69,10 +69,17 @@ class _ProductionFormDialogState extends ConsumerState<ProductionFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final maxHeight = screenHeight - keyboardHeight - 100; // 100px de marge
+
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 500),
+        constraints: BoxConstraints(
+          maxWidth: 500,
+          maxHeight: maxHeight,
+        ),
         decoration: BoxDecoration(
           color: AppColors.backgroundLight,
           borderRadius: BorderRadius.circular(20),
@@ -84,7 +91,7 @@ class _ProductionFormDialogState extends ConsumerState<ProductionFormDialog> {
             _buildHeader(),
             
             // Form content
-            Flexible(
+            Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 child: Form(
@@ -143,14 +150,17 @@ class _ProductionFormDialogState extends ConsumerState<ProductionFormDialog> {
                         icon: Icons.note,
                         maxLines: 3,
                       ),
+                      
+                      // Espacement supplémentaire pour éviter le débordement
+                      SizedBox(height: keyboardHeight > 0 ? 20 : 0),
                     ],
                   ),
                 ),
               ),
             ),
             
-            // Actions
-            _buildActions(),
+            // Footer avec boutons
+            _buildFooter(),
           ],
         ),
       ),
@@ -468,7 +478,7 @@ class _ProductionFormDialogState extends ConsumerState<ProductionFormDialog> {
     );
   }
 
-  Widget _buildActions() {
+  Widget _buildFooter() {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Row(

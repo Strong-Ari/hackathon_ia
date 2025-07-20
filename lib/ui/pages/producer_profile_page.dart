@@ -83,6 +83,7 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
 
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Mon Profil'),
         leading: IconButton(
@@ -110,10 +111,12 @@ class _ProducerProfilePageState extends ConsumerState<ProducerProfilePage>
           ],
         ],
       ),
-      body: profileAsync.when(
-        data: (profile) => _buildProfileContent(profile),
-        loading: () => _buildLoadingState(),
-        error: (error, stack) => _buildErrorState(error.toString()),
+      body: SafeArea(
+        child: profileAsync.when(
+          data: (profile) => _buildProfileContent(profile),
+          loading: () => _buildLoadingState(),
+          error: (error, stack) => _buildErrorState(error.toString()),
+        ),
       ),
       floatingActionButton: profileAsync.value != null && !_isEditing
           ? FloatingActionButton.extended(
