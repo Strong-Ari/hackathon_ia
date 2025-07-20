@@ -52,6 +52,7 @@ class _ProducerDashboardPageState extends ConsumerState<ProducerDashboardPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Tableau de Bord'),
         leading: IconButton(
@@ -100,7 +101,7 @@ class _ProducerDashboardPageState extends ConsumerState<ProducerDashboardPage>
               ),
             ),
           ),
-          
+
           // Panneau d'historique des notifications
           NotificationHistoryPanel(key: _historyPanelKey),
         ],

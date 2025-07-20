@@ -112,6 +112,7 @@ class _NotificationTestPageState extends ConsumerState<NotificationTestPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(
           'Test des Notifications',
@@ -121,179 +122,115 @@ class _NotificationTestPageState extends ConsumerState<NotificationTestPage> {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Section Configuration
-            _buildSection('Configuration API', PhosphorIcons.gear(), [
-              TextField(
-                controller: _baseUrlController,
-                decoration: InputDecoration(
-                  labelText: 'URL de base de l\'API',
-                  hintText: 'http://192.168.1.100:5000',
-                  prefixIcon: Icon(PhosphorIcons.globe()),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: _saveSettings,
-                icon: Icon(PhosphorIcons.floppyDisk()),
-                label: const Text('Sauvegarder la configuration'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ]),
-
-            const SizedBox(height: 32),
-
-            // Section Contrôles
-            _buildSection('Contrôles', PhosphorIcons.playCircle(), [
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _togglePolling,
-                      icon: Icon(
-                        _isPolling
-                            ? PhosphorIcons.pause()
-                            : PhosphorIcons.play(),
-                      ),
-                      label: Text(
-                        _isPolling
-                            ? 'Arrêter le polling'
-                            : 'Démarrer le polling',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _isPolling
-                            ? Colors.orange
-                            : Colors.green,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Section Configuration
+              _buildSection('Configuration API', PhosphorIcons.gear(), [
+                TextField(
+                  controller: _baseUrlController,
+                  decoration: InputDecoration(
+                    labelText: 'URL de base de l\'API',
+                    hintText: 'http://192.168.1.100:5000',
+                    prefixIcon: Icon(PhosphorIcons.globe()),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _testNotification,
-                      icon: Icon(PhosphorIcons.testTube()),
-                      label: const Text('Test notification'),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: _saveSettings,
+                  icon: Icon(PhosphorIcons.floppyDisk()),
+                  label: const Text('Sauvegarder la configuration'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
                     ),
-                  ),
-
-                  const SizedBox(width: 12),
-
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _clearCache,
-                      icon: Icon(PhosphorIcons.trash()),
-                      label: const Text('Vider le cache'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        side: const BorderSide(color: Colors.red),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ),
-                ],
-              ),
-            ]),
-
-            const SizedBox(height: 32),
-
-            // Section Informations
-            _buildSection('Informations', PhosphorIcons.info(), [
-              _buildInfoCard(
-                'Intervalle de polling',
-                '${ApiConstants.pollingInterval.inSeconds} secondes',
-                PhosphorIcons.clock(),
-                Colors.blue,
-              ),
-
-              const SizedBox(height: 12),
-
-              _buildInfoCard(
-                'Endpoint des notifications',
-                ApiConstants.notificationsEndpoint,
-                PhosphorIcons.link(),
-                Colors.purple,
-              ),
-
-              const SizedBox(height: 12),
-
-              _buildInfoCard(
-                'Son d\'alerte',
-                ApiConstants.alertSoundAsset,
-                PhosphorIcons.speakerHigh(),
-                Colors.orange,
-              ),
-            ]),
-
-            const SizedBox(height: 32),
-
-            // Section Instructions
-            _buildSection('Instructions', PhosphorIcons.questionMark(), [
-              Card(
-                color: theme.colorScheme.primaryContainer.withOpacity(0.3),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Comment utiliser:',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '1. Configurez l\'URL de votre API Flask\n'
-                        '2. Sauvegardez la configuration\n'
-                        '3. Démarrez le polling\n'
-                        '4. Les notifications apparaîtront automatiquement\n'
-                        '5. L\'audio sera lu automatiquement',
-                        style: GoogleFonts.poppins(fontSize: 14, height: 1.4),
-                      ),
-                    ],
                   ),
                 ),
-              ),
-            ]),
-          ],
+              ]),
+
+              const SizedBox(height: 32),
+
+              // Section Tests de notifications
+              _buildSection('Tests de Notifications', PhosphorIcons.bell(), [
+                ElevatedButton.icon(
+                  onPressed: _testSimpleNotification,
+                  icon: Icon(PhosphorIcons.bellSimple()),
+                  label: const Text('Notification Simple'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.secondary,
+                    foregroundColor: theme.colorScheme.onSecondary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                ElevatedButton.icon(
+                  onPressed: _testVoiceNotification,
+                  icon: Icon(PhosphorIcons.speakerHigh()),
+                  label: const Text('Notification Vocale'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.tertiary,
+                    foregroundColor: theme.colorScheme.onTertiary,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                ElevatedButton.icon(
+                  onPressed: _testUrgentNotification,
+                  icon: Icon(PhosphorIcons.warning()),
+                  label: const Text('Notification Urgente'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.error,
+                    foregroundColor: theme.colorScheme.onError,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ]),
+
+              const SizedBox(height: 32),
+
+              // Section État des notifications
+              _buildSection('État des Notifications', PhosphorIcons.info(), [
+                _buildStatusCard(),
+              ]),
+
+              // Espacement final pour éviter le débordement
+              SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 24),
+            ],
+          ),
         ),
       ),
     );

@@ -79,6 +79,7 @@ class _DiagnosisPageState extends State<DiagnosisPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: diagnosis.statusColor.withOpacity(0.05),
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -94,38 +95,40 @@ class _DiagnosisPageState extends State<DiagnosisPage>
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppDimensions.paddingLG),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Carte résultat principal
-            _buildMainResultCard(),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppDimensions.paddingLG),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Carte résultat principal
+              _buildMainResultCard(),
 
-            const SizedBox(height: AppDimensions.spaceLG),
-
-            // Confidence et perte estimée
-            _buildStatsRow(),
-
-            const SizedBox(height: AppDimensions.spaceLG),
-
-            // Détails de la maladie
-            if (diagnosis.status != PlantHealthStatus.healthy) ...[
-              _buildDiseaseDetailsCard(),
               const SizedBox(height: AppDimensions.spaceLG),
-            ],
 
-            // Symptômes détectés
-            if (diagnosis.symptoms.isNotEmpty) ...[
-              _buildSymptomsCard(),
+              // Confidence et perte estimée
+              _buildStatsRow(),
+
               const SizedBox(height: AppDimensions.spaceLG),
+
+              // Détails de la maladie
+              if (diagnosis.status != PlantHealthStatus.healthy) ...[
+                _buildDiseaseDetailsCard(),
+                const SizedBox(height: AppDimensions.spaceLG),
+              ],
+
+              // Symptômes détectés
+              if (diagnosis.symptoms.isNotEmpty) ...[
+                _buildSymptomsCard(),
+                const SizedBox(height: AppDimensions.spaceLG),
+              ],
+
+              // Actions recommandées
+              _buildActionsSection(),
+
+              const SizedBox(height: AppDimensions.spaceXXL),
             ],
-
-            // Actions recommandées
-            _buildActionsSection(),
-
-            const SizedBox(height: AppDimensions.spaceXXL),
-          ],
+          ),
         ),
       ),
     );

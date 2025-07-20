@@ -14,6 +14,7 @@ class ReportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Rapport PDF'),
         leading: IconButton(
@@ -21,31 +22,36 @@ class ReportPage extends StatelessWidget {
           icon: const Icon(Icons.arrow_back_ios),
         ),
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.picture_as_pdf,
-              size: 64,
-              color: AppColors.primaryGreen,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Rapport PDF',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.picture_as_pdf,
+                size: 64,
+                color: AppColors.primaryGreen,
               ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Page en développement...',
-              style: TextStyle(
-                color: AppColors.textSecondary,
+              SizedBox(height: 24),
+              Text(
+                'Rapport PDF',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryGreen,
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 16),
+              Text(
+                'Cette fonctionnalité sera bientôt disponible',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
